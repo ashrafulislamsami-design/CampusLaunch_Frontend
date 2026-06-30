@@ -18,39 +18,57 @@ const ProgressTimeline = ({ history = [], currentStage = 'Idea', isPublic = fals
   ];
 
   return (
-    <div className={`relative ${isPublic ? 'py-12' : 'p-6'}`}>
-      <h3 className={`font-black text-amber-900 font-serif-custom mb-10 border-b-2 border-amber-200 pb-4 ${isPublic ? 'text-4xl text-center' : 'text-xl'}`}>
-        {isPublic ? 'The Traction Journey' : 'Journey Progress'}
-      </h3>
+    <div className={`relative ${isPublic ? 'py-12 bg-[#09090B] min-h-screen px-4' : 'py-4 px-2'}`} aria-label={`Startup journey progress — current stage: ${currentStage}`}>
+      {isPublic ? (
+        <h3 className="font-sans text-3xl font-bold text-white text-center mb-12 tracking-tight">
+          The Traction Journey
+        </h3>
+      ) : (
+        <div className="flex items-center gap-2 mb-6 px-4">
+          <div className="w-0.5 h-4 bg-[#2563EB]" />
+          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">
+            Journey Progress
+          </span>
+        </div>
+      )}
 
-      <div className="relative">
-        {/* Main Gold Thread (Vertical Line) */}
-        <div className="absolute left-[23px] top-4 bottom-4 w-1 bg-amber-400 shadow-[0px_0px_10px_#fcd34d] z-0"></div>
+      <div className="relative px-2">
+        {/* Minimal vertical line thread */}
+        <div className="absolute left-[27px] top-4 bottom-4 w-[2px] bg-[#27272A] z-0"></div>
 
-        <div className="space-y-12">
-          {timelinePoints.map((point, idx) => (
-            <div key={idx} className="relative z-10 flex items-start gap-6 group">
-              {/* Point Node */}
-              <div className={`w-12 h-12 flex items-center justify-center rounded-xl border-4 transition shadow-lg ${idx === timelinePoints.length - 1 ? 'bg-teal-700 border-teal-200 text-teal-50 scale-110' : 'bg-amber-100 border-amber-300 text-amber-800'}`} style={{ borderRadius: '6px 12px 6px 12px' }}>
-                 {idx === timelinePoints.length - 1 ? <Rocket size={20} /> : <Milestone size={18} />}
-              </div>
-
-              {/* Data Placard */}
-              <div className="placard p-6 flex-grow bg-white hover:border-amber-400 transform group-hover:translate-x-2 transition shadow-[4px_6px_0px_#d97706]" style={{ borderRadius: '8px 24px 8px 24px' }}>
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="font-black text-amber-900 text-lg uppercase tracking-widest font-serif-custom">
-                    Stage: {point.stage}
-                  </h4>
-                  <span className="text-[10px] font-bold text-stone-400 flex items-center gap-1">
-                    <CalendarDays size={12} /> {new Date(point.date).toLocaleDateString()}
-                  </span>
+        <div className="space-y-8" role="list" aria-label="Journey stages">
+          {timelinePoints.map((point, idx) => {
+            const isCurrent = idx === timelinePoints.length - 1;
+            return (
+              <div key={idx} className="relative z-10 flex items-start gap-4 group" role="listitem" aria-current={isCurrent ? 'step' : undefined} aria-label={`Stage: ${point.stage}${isCurrent ? ' (current)' : ''}`}>
+                {/* Point Node */}
+                <div 
+                  className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-sm border transition-all duration-150 z-10 ${
+                    isCurrent 
+                      ? 'bg-[#2563EB15] border-[#2563EB] text-[#60A5FA]' 
+                      : 'bg-[#09090B] border-[#27272A] text-zinc-600 group-hover:border-zinc-500'
+                  }`}
+                >
+                  {isCurrent ? <Rocket size={16} /> : <Milestone size={15} />}
                 </div>
-                <p className="text-stone-600 font-sans-custom font-medium italic text-sm leading-relaxed border-l-2 border-amber-200 pl-4 py-1">
-                  {point.note || `Progressing within the ${point.stage} phase.`}
-                </p>
+
+                {/* Data Placard */}
+                <div className="p-4 flex-grow bg-[#09090B] border border-[#27272A] rounded-sm hover:border-zinc-600 transition-colors duration-150">
+                  <div className="flex justify-between items-center gap-2">
+                    <h4 className={`font-mono text-[10px] uppercase tracking-widest font-semibold ${isCurrent ? 'text-zinc-100' : 'text-zinc-500'}`}>
+                      Stage: {point.stage}
+                    </h4>
+                    <span className="text-[9px] font-mono text-zinc-600 flex items-center gap-1">
+                      <CalendarDays size={10} /> {new Date(point.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-zinc-500 font-sans text-xs leading-relaxed border-l border-[#27272A] pl-3 py-0.5 mt-2">
+                    {point.note || `Progressing within the ${point.stage} phase.`}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

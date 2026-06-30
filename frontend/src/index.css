@@ -1,59 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   body {
-    @apply text-stone-900;
-    font-family: 'DM Sans', sans-serif;
-    background-color: #f7f4ed;
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+    background-color: #09090B;
+    color: #FAFAFA;
+    font-family: 'Inter', 'Outfit', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer components {
-  .font-serif-custom {
-    font-family: 'Playfair Display', serif;
-  }
-  
-  .font-sans-custom {
-    font-family: 'DM Sans', sans-serif;
-  }
-  
-  .bg-paper {
-    background-color: #fdfbf7;
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise2)' opacity='0.03'/%3E%3C/svg%3E");
+  /* ── Design Tokens ─────────────────────────────── */
+  /* Canvas:  #09090B  */
+  /* Surface: #18181B  */
+  /* Border:  #27272A  */
+  /* Accent:  #2563EB  */
+
+  /* ── Cards & Containers ─────────────────────────── */
+  .swiss-card {
+    @apply bg-[#18181B] border border-[#27272A] rounded-sm;
   }
 
+  .swiss-card-hover {
+    @apply bg-[#18181B] border border-[#27272A] rounded-sm hover:border-zinc-600;
+  }
+
+  /* ── Buttons ─────────────────────────────────────── */
+  .swiss-btn-primary {
+    @apply bg-[#2563EB] text-white font-semibold px-4 py-2 rounded-sm text-sm
+           hover:bg-blue-500 border border-[#2563EB] hover:border-blue-500
+           transition-colors duration-0 cursor-pointer;
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+  }
+
+  .swiss-btn-ghost {
+    @apply bg-transparent text-zinc-400 font-semibold px-4 py-2 rounded-sm text-sm
+           border border-[#27272A] hover:border-zinc-500 hover:text-zinc-100
+           transition-colors duration-0 cursor-pointer;
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+  }
+
+  .swiss-btn-danger {
+    @apply bg-transparent text-red-500 font-semibold px-4 py-2 rounded-sm text-sm
+           border border-[#27272A] hover:border-red-600 hover:bg-red-950
+           transition-colors duration-0 cursor-pointer;
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+  }
+
+  /* ── Labels ──────────────────────────────────────── */
+  .swiss-label {
+    @apply text-[10px] font-semibold uppercase tracking-widest text-zinc-500;
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+  }
+
+  .swiss-badge {
+    @apply text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 
+           rounded-sm border border-[#27272A] text-zinc-400 bg-[#18181B];
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+  }
+
+  /* ── Inputs ──────────────────────────────────────── */
+  .swiss-input {
+    @apply w-full bg-[#09090B] border border-[#27272A] rounded-sm px-3 py-2 
+           text-zinc-100 text-sm placeholder-zinc-600
+           focus:outline-none focus:border-[#2563EB]
+           transition-colors duration-0;
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+  }
+
+  .swiss-select {
+    @apply bg-[#09090B] border border-[#27272A] rounded-sm px-3 py-2 
+           text-zinc-100 text-sm
+           focus:outline-none focus:border-[#2563EB]
+           transition-colors duration-0;
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+  }
+
+  /* ── Section Dividers ────────────────────────────── */
+  .swiss-divider {
+    @apply border-t border-[#27272A];
+  }
+
+  /* ── Backwards-compat stubs (keep old class names working) ── */
   .placard {
-    @apply bg-paper border-[3px] border-amber-200/80 shadow-[6px_8px_0px_#d97706] transition-all;
-    border-radius: 12px 32px 12px 32px;
+    @apply bg-[#18181B] border border-[#27272A] rounded-sm;
   }
 
   .placard-interactive {
-    @apply bg-paper border-[3px] border-amber-300 shadow-[6px_8px_0px_#b45309] hover:shadow-[2px_3px_0px_#b45309] hover:translate-y-[5px] hover:translate-x-[4px] transition-all cursor-pointer;
-    border-radius: 12px 32px 12px 32px;
+    @apply bg-[#18181B] border border-[#27272A] rounded-sm 
+           hover:border-zinc-500 transition-colors duration-0 cursor-pointer;
   }
-  
+
   .gilded-btn {
-    @apply placard-interactive font-bold text-amber-900 bg-gradient-to-br from-amber-50 to-amber-200 px-8 py-3 tracking-widest text-sm flex items-center justify-center gap-2;
+    @apply bg-[#2563EB] text-white font-semibold px-6 py-2.5 rounded-sm text-xs
+           uppercase tracking-widest border border-[#2563EB]
+           hover:bg-blue-500 hover:border-blue-500 
+           transition-colors duration-0 flex items-center justify-center gap-2;
+    font-family: 'Geist Mono', 'SF Mono', monospace;
   }
-  
-  .icon-tactile {
-    filter: drop-shadow(2px 2px 0px rgba(180, 83, 9, 0.3));
-  }
-  
+
   .jewel-teal {
-    @apply bg-[#0f766e] text-teal-50 border-teal-900 shadow-[4px_6px_0px_#134e4a];
+    @apply bg-[#18181B] border border-[#27272A] text-zinc-100;
   }
-  
+
   .muted-coral {
-    @apply bg-[#e17055] text-orange-50 border-orange-900 shadow-[4px_6px_0px_#a3432a];
+    @apply bg-[#18181B] border border-[#27272A] text-zinc-100;
+  }
+
+  .bg-paper {
+    background-color: #09090B;
+  }
+
+  .font-serif-custom {
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  }
+
+  .font-sans-custom {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .icon-tactile {
+    /* no-op: no drop-shadow in Swiss Blueprint */
+  }
+
+  /* ── Skeleton Loading ── */
+  .skeleton-box {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: #1e1e21;
+    border-radius: 2px;
+  }
+  .skeleton-box::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.03) 20%,
+      rgba(255, 255, 255, 0.07) 60%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 1.8s infinite;
+    content: '';
+  }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* ── Tooltips ── */
+  .tooltip-container {
+    position: relative;
+    display: inline-block;
+  }
+  .tooltip-text {
+    visibility: hidden;
+    width: 100px;
+    background-color: #09090b;
+    color: #a1a1aa;
+    text-align: center;
+    border: 1px solid #27272a;
+    border-radius: 2px;
+    padding: 4px 6px;
+    position: absolute;
+    z-index: 50;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  .tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
   }
 }

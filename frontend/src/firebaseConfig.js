@@ -4,17 +4,20 @@ import { getMessaging, getToken, onMessage, isSupported } from "firebase/messagi
 
 // Paste YOUR specific config object from the Firebase console here:
 const firebaseConfig = {
-  apiKey: "AIzaSyBH9E3ntAeO8KjNasYrTQ29wua4Hxvm8FA",
-  authDomain: "campuslaunch-995ae.firebaseapp.com",
-  projectId: "campuslaunch-995ae",
-  storageBucket: "campuslaunch-995ae.firebasestorage.app",
-  messagingSenderId: "1023015602623",
-  appId: "1:1023015602623:web:19bf0e2c43e666de63b90a",
-  measurementId: "G-849E5CY55C"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
+import { getAuth } from "firebase/auth";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 let messaging = null;
 
@@ -26,4 +29,4 @@ const setupMessaging = async () => {
   return messaging;
 };
 
-export { messaging, setupMessaging, getToken, onMessage };
+export { messaging, setupMessaging, getToken, onMessage, auth };

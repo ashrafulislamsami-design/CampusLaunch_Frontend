@@ -54,12 +54,15 @@ function StickyCard({
     if (value !== card.content) onEdit?.(card._id, sectionKey, value);
   };
 
-  const rotation = (() => {
-    const n = (card._id || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-    return ((n % 5) - 2) * 0.7; // -1.4 to +1.4 deg
-  })();
+  const colorMap = {
+    yellow: 'border-l-2 border-l-amber-500',
+    blue:   'border-l-2 border-l-[#2563EB]',
+    green:  'border-l-2 border-l-emerald-500',
+    pink:   'border-l-2 border-l-pink-500',
+    orange: 'border-l-2 border-l-orange-500'
+  };
 
-  const color = CARD_COLORS[card.color] || CARD_COLORS.yellow;
+  const leftBorder = colorMap[card.color] || colorMap.yellow;
 
   return (
     <article
@@ -67,59 +70,57 @@ function StickyCard({
       onDragStart={(e) => onDragStart?.(e, card._id)}
       onDragOver={(e) => onDragOver?.(e, card._id)}
       onDrop={(e) => onDrop?.(e, card._id)}
-      aria-label={`Sticky card: ${card.content?.slice(0, 40) || 'empty'}`}
-      className={`group relative ${color.bg} ${color.border} border-2 rounded-md p-3 shadow-[2px_3px_0_rgba(0,0,0,0.08)] hover:shadow-[3px_5px_0_rgba(0,0,0,0.12)] hover:-translate-y-0.5 transition-all select-none`}
-      style={{ transform: `rotate(${rotation}deg)` }}
+      aria-label={`Schematic card: ${card.content?.slice(0, 40) || 'empty'}`}
+      className={`group relative bg-[#09090B] border border-[#27272A] hover:border-zinc-500 ${leftBorder} rounded-sm p-3 transition-none select-none`}
     >
-      {/* Color dot */}
-      <div className={`absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full ${color.dot} shadow`} />
-
       {/* Drag handle */}
       {!readOnly && (
         <div
           {...dragHandleProps}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 opacity-0 group-hover:opacity-70 cursor-grab"
+          className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-70 cursor-grab"
           aria-label="Drag to reorder"
         >
-          <GripVertical size={14} className="text-stone-600" />
+          <GripVertical size={12} className="text-zinc-500" />
         </div>
       )}
 
-      {editing && !readOnly ? (
-        <textarea
-          ref={textareaRef}
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            autoResize(e.target);
-            scheduleCommit(e.target.value);
-          }}
-          onBlur={() => {
-            setEditing(false);
-            commitNow(text);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      <div className={!readOnly ? 'pl-2.5' : ''}>
+        {editing && !readOnly ? (
+          <textarea
+            ref={textareaRef}
+            value={text}
+            onChange={(e) => {
+              setText(e.target.value);
+              autoResize(e.target);
+              scheduleCommit(e.target.value);
+            }}
+            onBlur={() => {
               setEditing(false);
               commitNow(text);
-            }
-          }}
-          className="w-full bg-transparent outline-none text-[13px] leading-snug resize-none text-stone-800 font-medium"
-          rows={Math.max(2, Math.ceil((text.length || 10) / 22))}
-          maxLength={280}
-          aria-label="Edit card"
-        />
-      ) : (
-        <p
-          onClick={() => !readOnly && setEditing(true)}
-          className="text-[13px] leading-snug text-stone-800 font-medium cursor-text whitespace-pre-wrap min-h-[1.5rem]"
-        >
-          {card.content || <span className="italic text-stone-400">Click to add…</span>}
-        </p>
-      )}
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                setEditing(false);
+                commitNow(text);
+              }
+            }}
+            className="w-full bg-transparent outline-none text-xs text-zinc-100 leading-relaxed font-mono resize-none focus:ring-0 focus:outline-none"
+            rows={Math.max(2, Math.ceil((text.length || 10) / 22))}
+            maxLength={280}
+            aria-label="Edit card"
+          />
+        ) : (
+          <p
+            onClick={() => !readOnly && setEditing(true)}
+            className="text-xs text-zinc-300 leading-relaxed font-mono cursor-text whitespace-pre-wrap min-h-[1.5rem]"
+          >
+            {card.content || <span className="italic text-zinc-600">Click to add…</span>}
+          </p>
+        )}
+      </div>
 
       {!readOnly && (
-        <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5">
+        <div className="flex items-center justify-between mt-2 pt-1 border-t border-[#27272A]">
           <div className="relative">
             <button
               type="button"
@@ -127,14 +128,14 @@ function StickyCard({
                 e.stopPropagation();
                 setShowPicker((v) => !v);
               }}
-              className="p-1 rounded hover:bg-black/5 text-stone-600"
+              className="p-1 rounded-sm hover:bg-white/5 text-zinc-500 hover:text-zinc-300 transition-none"
               aria-label="Change color"
               title="Change color"
             >
-              <Palette size={13} />
+              <Palette size={12} />
             </button>
             {showPicker && (
-              <div className="absolute top-6 left-0 z-10">
+              <div className="absolute top-6 left-0 z-20">
                 <CardColorPicker
                   value={card.color}
                   onChange={(c) => {
@@ -146,26 +147,27 @@ function StickyCard({
             )}
           </div>
 
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-none">
             <button
               type="button"
-              onClick={() => setEditing(true)}
-              className="p-1 rounded hover:bg-black/5 text-stone-600"
+              onClick={(e) => { e.stopPropagation(); setEditing(true); }}
+              className="p-1 rounded-sm hover:bg-white/5 text-zinc-500 hover:text-zinc-300 transition-none"
               aria-label="Edit card"
               title="Edit"
             >
-              <Pencil size={13} />
+              <Pencil size={12} />
             </button>
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 if (window.confirm('Delete this card?')) onDelete?.(card._id, sectionKey);
               }}
-              className="p-1 rounded hover:bg-red-100 text-red-600"
+              className="p-1 rounded-sm hover:bg-red-950/30 text-zinc-500 hover:text-red-400 transition-none"
               aria-label="Delete card"
               title="Delete"
             >
-              <Trash2 size={13} />
+              <Trash2 size={12} />
             </button>
           </div>
         </div>

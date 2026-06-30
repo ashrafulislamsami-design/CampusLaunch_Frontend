@@ -2,9 +2,98 @@ import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { API_BASE_URL } from '@/config';
-import { Rocket, Target, CalendarDays, Coins, Users, Gem, BookOpen, Mic2, LayoutGrid, FileText} from 'lucide-react';
+import {
+  Rocket, Target, CalendarDays, Coins, Users, Gem, BookOpen, Mic2, LayoutGrid, FileText
+} from 'lucide-react';
 import FundingCard from '../Funding/FundingCard';
 
+const MONO = { fontFamily: "'Geist Mono', 'SF Mono', monospace" };
+const OUTFIT = { fontFamily: "'Outfit', 'Inter', sans-serif" };
+
+// Module card data
+const MODULES = [
+  {
+    icon: Target,
+    label: 'Teams',
+    title: 'Create a Team',
+    desc: 'Form an idea, define your problem space, and invite classmates to your entrepreneurial journey.',
+    cta: 'Commence',
+    to: '/teams/create',
+    accent: '#2563EB',
+  },
+  {
+    icon: Coins,
+    label: 'Funding',
+    title: 'Browse Funding',
+    desc: 'Discover active university grants, alumni accelerators, and local VC pitch competitions.',
+    cta: 'Connect',
+    to: '/funding',
+    accent: '#16A34A',
+  },
+  {
+    icon: Users,
+    label: 'Mentors',
+    title: 'Mentorship',
+    desc: 'Connect with industry experts, book 1-on-1 sessions, and get guidance for your startup journey.',
+    cta: 'Find Mentors',
+    to: '/mentors',
+    accent: '#7C3AED',
+  },
+  {
+    icon: Users,
+    label: 'Matching',
+    title: 'Founder Match',
+    desc: 'Our engine identifies missing roles in your team and suggests ideal student co-founders.',
+    cta: 'Find Synergy',
+    to: '/matching',
+    accent: '#0891B2',
+  },
+  {
+    icon: Users,
+    label: 'Profiles',
+    title: 'Browse Profiles',
+    desc: 'Discover student entrepreneurs, explore their skills, ideas, and find your next co-founder.',
+    cta: 'Explore',
+    to: '/profiles',
+    accent: '#DB2777',
+  },
+  {
+    icon: BookOpen,
+    label: 'Curriculum',
+    title: 'Curriculum',
+    desc: 'Follow a structured startup curriculum with lessons, videos, quizzes, and assignments.',
+    cta: 'Start Learning',
+    to: '/curriculum',
+    accent: '#059669',
+  },
+  {
+    icon: Mic2,
+    label: 'Arena',
+    title: 'Pitch Arena',
+    desc: 'Compete in live pitch events, upload your deck, and present before judges.',
+    cta: 'Enter Arena',
+    to: '/pitch-arena',
+    accent: '#DC2626',
+  },
+  {
+    icon: CalendarDays,
+    label: 'Events',
+    title: 'Event Hub',
+    desc: 'Check out upcoming networking events, workshops, and hackathons around your campus.',
+    cta: 'Network',
+    to: '/events/browse',
+    accent: '#EA580C',
+  },
+  {
+    icon: FileText,
+    label: 'Decks',
+    title: 'Pitch Decks',
+    desc: 'Upload, manage, and showcase your startup pitch decks to mentors, judges, and investors.',
+    cta: 'My Decks',
+    to: '/decks',
+    accent: '#9333EA',
+  },
+];
 
 const StudentHome = () => {
   const { userTeamId, token, user, setUser } = useContext(AuthContext);
@@ -53,286 +142,98 @@ const StudentHome = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      {/* Welcome & Banner Area */}
-      <div className="mb-12 text-center md:text-left flex flex-col md:flex-row justify-between items-center jewel-teal p-8 sm:p-12 shadow-xl relative overflow-hidden" style={{ borderRadius: '16px 48px 16px 48px' }}>
-        <div className="absolute inset-0 opacity-[0.03] bg-black"></div>
-        <div className="relative z-10 md:w-2/3">
-          <h1 className="text-4xl sm:text-5xl font-black mb-4 font-serif-custom text-teal-50 drop-shadow-md">The CampusLaunch Hub</h1>
-          <p className="text-teal-100 text-lg font-sans-custom font-medium max-w-2xl leading-relaxed">
+    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+
+      {/* ── Hero Banner ──────────────────────────────────────────── */}
+      <div className="mb-10 bg-[#18181B] border border-[#27272A] rounded-sm p-8 flex flex-col md:flex-row justify-between items-start gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-0.5 h-4 bg-[#2563EB]" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500" style={MONO}>
+              Command Center
+            </span>
+          </div>
+          <h1 className="text-4xl font-bold text-zinc-100 mb-2" style={OUTFIT}>
+            The CampusLaunch Hub
+          </h1>
+          <p className="text-zinc-400 text-sm max-w-xl leading-relaxed" style={MONO}>
             Choose a module below to begin crafting your startup architecture, map your event calendar, and navigate the seed matrix.
           </p>
         </div>
 
         {userTeamId && (
-          <div className="relative z-10 mt-10 md:mt-0 flex justify-end">
-            <Link
-              to={`/teams/dashboard/${userTeamId}`}
-              className="flex flex-col items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200 text-amber-900 border-[3px] border-amber-300 px-10 py-6 shadow-[6px_8px_0px_#042f2e] hover:shadow-[3px_4px_0px_#042f2e] hover:translate-y-[4px] hover:translate-x-[3px] transition-all cursor-pointer group"
-              style={{ borderRadius: '12px 32px 12px 32px' }}
-            >
-              <Rocket size={40} className="mb-3 text-teal-700 icon-tactile group-hover:-translate-y-2 transition-transform duration-300" />
-              <span className="font-black text-lg uppercase tracking-widest font-sans-custom">Go to Workspace</span>
-            </Link>
-          </div>
+          <Link
+            to={`/teams/dashboard/${userTeamId}`}
+            className="flex items-center gap-2 bg-[#2563EB] text-white font-semibold px-6 py-3 rounded-sm text-sm uppercase tracking-widest hover:bg-blue-500 transition-colors shrink-0"
+            style={MONO}
+          >
+            <Rocket size={16} />
+            Go to Workspace
+          </Link>
         )}
       </div>
 
-      {/* Modules Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-
-        {/* Teams Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-300 text-amber-700 rounded-xl flex items-center justify-center mb-6 shadow-sm transform -rotate-3 group-hover:rotate-0 transition">
-              <Target size={32} className="icon-tactile text-amber-900" />
+      {/* ── Modules Grid ─────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-4">
+        {MODULES.map(({ icon: Icon, label, title, desc, cta, to, accent }) => (
+          <div key={label} className="bg-[#18181B] border border-[#27272A] rounded-sm p-5 flex flex-col justify-between hover:border-zinc-600 transition-colors group">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div
+                  className="w-8 h-8 rounded-sm flex items-center justify-center"
+                  style={{ backgroundColor: `${accent}20`, border: `1px solid ${accent}40` }}
+                >
+                  <Icon size={16} style={{ color: accent }} />
+                </div>
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500" style={MONO}>
+                  {label}
+                </span>
+              </div>
+              <h2 className="text-base font-bold text-zinc-100 mb-2" style={OUTFIT}>{title}</h2>
+              <p className="text-zinc-500 text-xs leading-relaxed mb-5" style={{ fontFamily: "'Inter', sans-serif" }}>
+                {desc}
+              </p>
             </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Create a Team</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Form an idea, define your problem space, and invite classmates to your entrepreneurial journey.
-            </p>
-          </div>
-          <Link
-            to="/teams/create"
-            className="w-full text-center bg-amber-900 text-amber-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-amber-100 hover:text-amber-900 hover:border-amber-400 transition"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            Commence
-          </Link>
-        </div>
-
-        {/* Funding Module (Placeholder) */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-teal-100 to-teal-200 border-2 border-teal-300 text-teal-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform translate-y-2 -rotate-2 group-hover:translate-y-0 group-hover:rotate-0 transition">
-              <Coins size={32} className="icon-tactile text-teal-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Browse Funding</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Discover active university grants, alumni accelerators, and local VC pitch competitions.
-            </p>
-          </div>
-          <Link
-            to="/funding"
-            className="w-full text-center bg-teal-800 text-teal-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-teal-100 hover:text-teal-900 hover:border-teal-400 transition"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            Connect
-          </Link>
-        </div>
-
-        {/* Event Hub Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 border-2 border-orange-300 text-orange-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform rotate-3 group-hover:rotate-0 transition">
-              <CalendarDays size={32} className="icon-tactile text-orange-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Event Hub</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Check out upcoming networking events, workshops, and hackathons all around your campus.
-            </p>
-          </div>
-          <Link
-            to="/events"
-            className="w-full text-center bg-orange-800 text-orange-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-orange-100 hover:text-orange-900 hover:border-orange-400 transition"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            Network
-          </Link>
-        </div>
-
-        {/* Mentor Booking Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-sky-100 to-sky-200 border-2 border-sky-300 text-sky-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform -translate-y-1 rotate-1 group-hover:translate-y-0 group-hover:rotate-0 transition">
-              <Users size={32} className="icon-tactile text-sky-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Mentorship</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Connect with industry experts, book 1-on-1 sessions, and get guidance for your startup journey.
-            </p>
-          </div>
-
-          <div className="flex gap-2">
             <Link
-              to="/mentors"
-              className="flex-1 text-center bg-sky-800 text-sky-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-sky-100 hover:text-sky-900 hover:border-sky-400 transition"
-              style={{ borderRadius: '8px 24px 8px 24px' }}
+              to={to}
+              className="w-full text-center font-semibold py-2 rounded-sm text-xs uppercase tracking-widest transition-colors"
+              style={{ ...MONO, backgroundColor: `${accent}18`, color: accent, border: `1px solid ${accent}30` }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = `${accent}30`; }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = `${accent}18`; }}
             >
-              Find Mentors
-            </Link>
-            <Link
-              to="/bookings/my"
-              className="flex-1 text-center bg-sky-100 text-sky-900 font-bold py-3 uppercase tracking-widest text-sm border-2 border-sky-300 hover:bg-sky-200 transition"
-              style={{ borderRadius: '8px 24px 8px 24px' }}
-            >
-              My Bookings
+              {cta}
             </Link>
           </div>
-        </div>
+        ))}
 
-        {/* Co-Founder Matching Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
+        {/* Canvas Builder — special case (requires teamId) */}
+        <div className="bg-[#18181B] border border-[#27272A] rounded-sm p-5 flex flex-col justify-between hover:border-zinc-600 transition-colors">
           <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-indigo-200 border-2 border-indigo-300 text-indigo-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform translate-x-2 rotate-2 group-hover:rotate-0 transition">
-              <Users size={32} className="icon-tactile text-indigo-900" />
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ backgroundColor: '#CA8A0420', border: '1px solid #CA8A0440' }}>
+                <LayoutGrid size={16} style={{ color: '#CA8A04' }} />
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500" style={MONO}>
+                Canvas
+              </span>
             </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Founder Match</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Our engine identifies missing roles in your team and suggests ideal student co-founders.
-            </p>
-          </div>
-          <Link
-            to="/matching"
-            className="w-full text-center bg-indigo-900 text-indigo-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-indigo-100 hover:text-indigo-900 hover:border-indigo-400 transition"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            Find Synergy
-          </Link>
-        </div>
-
-        {/* Browse Profiles Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-violet-100 to-violet-200 border-2 border-violet-300 text-violet-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform -rotate-2 group-hover:rotate-0 transition">
-              <Users size={32} className="icon-tactile text-violet-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Browse Profiles</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Discover student entrepreneurs, explore their skills, ideas, and find your next co-founder.
-            </p>
-          </div>
-          <Link
-            to="/profiles"
-            className="w-full text-center bg-violet-800 text-violet-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-violet-100 hover:text-violet-900 hover:border-violet-400 transition"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            Explore
-          </Link>
-        </div>
-
-
-        {/* Curriculum Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-emerald-200 border-2 border-emerald-300 text-emerald-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform -rotate-2 group-hover:rotate-0 transition">
-              <BookOpen size={32} className="icon-tactile text-emerald-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Curriculum</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Follow a structured startup curriculum with lessons, videos, quizzes, and assignments.
-            </p>
-          </div>
-          <Link
-            to="/curriculum"
-            className="w-full text-center bg-emerald-800 text-emerald-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-emerald-100 hover:text-emerald-900 hover:border-emerald-400 transition"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            Start Learning
-          </Link>
-        </div>
-
-        {/* Pitch Arena Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-rose-100 to-rose-200 border-2 border-rose-300 text-rose-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform rotate-2 group-hover:rotate-0 transition">
-              <Mic2 size={32} className="icon-tactile text-rose-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Pitch Arena</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Compete in live pitch events, upload your deck, and present before judges.
-            </p>
-          </div>
-          <Link
-            to="/pitch-arena"
-            className="w-full text-center bg-rose-800 text-rose-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-rose-100 hover:text-rose-900 hover:border-rose-400 transition"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            Enter Arena
-          </Link>
-        </div>
-        {/* Event Hub Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 border-2 border-orange-300 text-orange-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform rotate-3 group-hover:rotate-0 transition">
-              <CalendarDays size={32} className="icon-tactile text-orange-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Event Hub</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Check out upcoming networking events, workshops, and hackathons all around your campus.
-            </p>
-          </div>
-
-          {/* Primary */}
-          <Link
-            to="/events/browse"
-            className="w-full text-center bg-orange-800 text-orange-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-orange-100 hover:text-orange-900 hover:border-orange-400 transition mb-2"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            Network
-          </Link>
-
-          {/* Secondary row */}
-          <div className="flex gap-2">
-            <Link
-              to="/events/archive"
-              className="flex-1 text-center bg-orange-100 text-orange-900 font-bold py-2.5 uppercase tracking-widest text-xs border-2 border-orange-300 hover:bg-orange-200 transition"
-              style={{ borderRadius: '8px 24px 8px 24px' }}
-            >
-              Archive
-            </Link>
-            <Link
-              to="/events/my"
-              className="flex-1 text-center bg-orange-100 text-orange-900 font-bold py-2.5 uppercase tracking-widest text-xs border-2 border-orange-300 hover:bg-orange-200 transition"
-              style={{ borderRadius: '8px 24px 8px 24px' }}
-            >
-              My Events
-            </Link>
-          </div>
-        </div>
-        {/* Pitch Decks Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-fuchsia-100 to-fuchsia-200 border-2 border-fuchsia-300 text-fuchsia-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform -rotate-2 group-hover:rotate-0 transition">
-              <FileText size={32} className="icon-tactile text-fuchsia-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Pitch Decks</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Upload, manage, and showcase your startup pitch decks to mentors, judges, and investors.
-            </p>
-          </div>
-          <Link
-            to="/decks"
-            className="w-full text-center bg-fuchsia-800 text-fuchsia-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-fuchsia-100 hover:text-fuchsia-900 hover:border-fuchsia-400 transition"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
-          >
-            My Decks
-          </Link>
-        </div>
-
-        {/* Canvas Builder Module (Business Model Canvas) */}
-        <div className="placard p-8 group flex flex-col justify-between">
-          <div>
-            <div className="w-16 h-16 bg-gradient-to-br from-yellow-100 to-yellow-200 border-2 border-yellow-300 text-yellow-800 rounded-xl flex items-center justify-center mb-6 shadow-sm transform rotate-2 group-hover:rotate-0 transition">
-              <LayoutGrid size={32} className="icon-tactile text-yellow-900" />
-            </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">Canvas Builder</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Build your Business Model Canvas collaboratively with your team — sticky notes, real-time editing, and version history.
+            <h2 className="text-base font-bold text-zinc-100 mb-2" style={OUTFIT}>Canvas Builder</h2>
+            <p className="text-zinc-500 text-xs leading-relaxed mb-5" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Build your Business Model Canvas collaboratively with your team — real-time editing and version history.
             </p>
           </div>
           {userTeamId ? (
             <Link
               to={`/canvas/${userTeamId}`}
-              className="w-full text-center bg-yellow-700 text-yellow-50 font-bold py-3 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-yellow-100 hover:text-yellow-900 hover:border-yellow-400 transition"
-              style={{ borderRadius: '8px 24px 8px 24px' }}
+              className="w-full text-center font-semibold py-2 rounded-sm text-xs uppercase tracking-widest transition-colors"
+              style={{ ...MONO, backgroundColor: '#CA8A0418', color: '#CA8A04', border: '1px solid #CA8A0430' }}
             >
               Open Canvas
             </Link>
           ) : (
             <div
-              className="w-full text-center bg-stone-200 text-stone-500 font-bold py-3 uppercase tracking-widest text-sm border-2 border-stone-300 cursor-not-allowed"
-              style={{ borderRadius: '8px 24px 8px 24px' }}
+              className="w-full text-center font-semibold py-2 rounded-sm text-xs uppercase tracking-widest text-zinc-600 border border-[#27272A] cursor-not-allowed"
+              style={MONO}
               title="Join a team first"
             >
               Join a team first
@@ -340,56 +241,63 @@ const StudentHome = () => {
           )}
         </div>
 
-        {/* My Connections Module */}
-        <div className="placard p-8 group flex flex-col justify-between">
+        {/* My Connections — special case */}
+        <div className="bg-[#18181B] border border-[#27272A] rounded-sm p-5 flex flex-col justify-between hover:border-zinc-600 transition-colors">
           <div>
-            {/* Custom Messenger-style icon combining chat bubble + check badge */}
-            <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-teal-700 border-2 border-teal-300 rounded-xl flex items-center justify-center mb-6 shadow-md transform -rotate-2 group-hover:rotate-0 transition relative overflow-hidden">
-              {/* WhatsApp/Messenger-style SVG icon */}
-              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-9 h-9">
-                {/* Outer chat bubble */}
-                <path d="M20 4C11.163 4 4 10.716 4 19c0 3.09.938 5.97 2.553 8.382L4 36l8.97-2.497A16.8 16.8 0 0020 34c8.837 0 16-6.716 16-15S28.837 4 20 4z" fill="white" fillOpacity="0.95" />
-                {/* Inner dots like a message */}
-                <circle cx="13" cy="19" r="2.2" fill="#0f766e" />
-                <circle cx="20" cy="19" r="2.2" fill="#0f766e" />
-                <circle cx="27" cy="19" r="2.2" fill="#0f766e" />
-              </svg>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ backgroundColor: '#5865F220', border: '1px solid #5865F240' }}>
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4">
+                  <path d="M20 4C11.163 4 4 10.716 4 19c0 3.09.938 5.97 2.553 8.382L4 36l8.97-2.497A16.8 16.8 0 0020 34c8.837 0 16-6.716 16-15S28.837 4 20 4z" fill="#5865F2" fillOpacity="0.8" />
+                  <circle cx="13" cy="19" r="2.2" fill="white" />
+                  <circle cx="20" cy="19" r="2.2" fill="white" />
+                  <circle cx="27" cy="19" r="2.2" fill="white" />
+                </svg>
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500" style={MONO}>
+                Network
+              </span>
             </div>
-            <h2 className="text-2xl font-black text-amber-900 mb-3 font-serif-custom">My Connections</h2>
-            <p className="text-stone-700 mb-8 min-h-[4rem] font-sans-custom leading-relaxed">
-              Connect, view request(s) & chat directly with your accepted co-founders for your startup team. Message, edit, and save conversations.
+            <h2 className="text-base font-bold text-zinc-100 mb-2" style={OUTFIT}>My Connections</h2>
+            <p className="text-zinc-500 text-xs leading-relaxed mb-5" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Connect, view requests, and chat directly with your accepted co-founders. Message and save conversations.
             </p>
           </div>
           <Link
             to="/connections"
-            className="w-full text-center text-white font-bold py-3 uppercase tracking-widest text-sm border-2 hover:opacity-90 hover:scale-105 active:scale-95 transition-all duration-200 shadow-md"
-            style={{ borderRadius: '8px 24px 8px 24px', backgroundColor: '#5865f2', borderColor: '#5865f2' }}
+            className="w-full text-center font-semibold py-2 rounded-sm text-xs uppercase tracking-widest transition-colors"
+            style={{ ...MONO, backgroundColor: '#5865F218', color: '#5865F2', border: '1px solid #5865F230' }}
           >
             My Partners
           </Link>
         </div>
-
       </div>
 
-      {/* My Saved Opportunities Section */}
-      <div className="mt-20">
-        <div className="flex items-center gap-4 mb-10">
-          <div className="p-3 bg-amber-100 rounded-2xl text-amber-900 border-2 border-amber-300 shadow-sm">
-            <Gem size={28} />
-          </div>
+      {/* ── My Saved Opportunities ────────────────────────────────── */}
+      <div className="mt-16">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-0.5 h-5 bg-[#2563EB]" />
           <div>
-            <h2 className="text-3xl font-black text-amber-900 font-serif-custom">My Saved Opportunities</h2>
-            <p className="text-stone-500 font-sans-custom font-medium">Your curated watchlist from the Funding Matrix.</p>
+            <h2 className="text-xl font-bold text-zinc-100" style={OUTFIT}>Saved Opportunities</h2>
+            <p className="text-zinc-500 text-xs mt-0.5" style={MONO}>Your curated watchlist from the Funding Matrix</p>
           </div>
         </div>
 
         {!loading && watchlist.length === 0 ? (
-          <div className="placard p-12 text-center border-dashed border-2 border-stone-200" style={{ borderRadius: '16px 48px 16px 48px' }}>
-            <p className="text-stone-400 font-black uppercase tracking-widest text-sm">No opportunities saved yet. Explore the Matrix to pin your future.</p>
-            <Link to="/funding" className="inline-block mt-6 text-amber-900 font-bold underline decoration-amber-400 decoration-2 underline-offset-4">Browse Funding Matrix</Link>
+          <div className="bg-[#18181B] border border-dashed border-[#27272A] rounded-sm p-12 text-center">
+            <Gem size={28} className="mx-auto mb-3 text-zinc-700" />
+            <p className="text-zinc-500 text-xs uppercase tracking-widest font-semibold mb-4" style={MONO}>
+              No opportunities saved yet. Explore the Matrix to pin your future.
+            </p>
+            <Link
+              to="/funding"
+              className="inline-block text-[#2563EB] hover:text-blue-400 text-xs uppercase tracking-widest font-semibold transition-colors"
+              style={MONO}
+            >
+              Browse Funding Matrix →
+            </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {watchlist.map((item) => (
               <FundingCard
                 key={item._id}

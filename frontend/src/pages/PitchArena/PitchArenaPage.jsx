@@ -11,13 +11,17 @@ import MyPitchEvents from '../../components/pitch/MyPitchEvents';
 const FILTERS = ['all', 'registration_open', 'live', 'results_published'];
 const FILTER_LABELS = { all: 'All', registration_open: 'Upcoming', live: 'Live Now', results_published: 'Past' };
 
+const MONO  = { fontFamily: "'Geist Mono', 'SF Mono', monospace" };
+const OUTFIT = { fontFamily: "'Outfit', 'Inter', sans-serif" };
+
 const SkeletonCard = () => (
-  <div className="placard overflow-hidden animate-pulse">
-    <div className="h-32 bg-stone-200" />
-    <div className="p-5 space-y-3">
-      <div className="h-3 bg-stone-200 rounded w-2/3" />
-      <div className="h-4 bg-stone-200 rounded w-full" />
-      <div className="h-10 bg-stone-200 rounded" />
+  <div className="bg-[#18181B] border border-[#27272A] flex flex-col">
+    <div className="h-12 border-b border-[#27272A] bg-[#1F1F23]" />
+    <div className="p-5 flex flex-col gap-3">
+      <div className="h-3 bg-[#27272A] w-2/3" />
+      <div className="h-3 bg-[#27272A] w-full" />
+      <div className="h-3 bg-[#27272A] w-1/2" />
+      <div className="h-8 bg-[#27272A] mt-3" />
     </div>
   </div>
 );
@@ -61,40 +65,54 @@ const PitchArenaPage = () => {
   const isOrganizer = user?.role === 'Organizer';
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#09090B]">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 py-10">
       <PitchArenaHero stats={stats} />
 
-      {/* Live Now highlight */}
+      {/* Live Now highlight — static label, no pulsing dot */}
       {liveEvents.length > 0 && (
-        <section className="mb-10" aria-label="Live events">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-            <h2 className="text-sm font-bold uppercase tracking-widest text-red-600">Live Now</h2>
+        <section className="mb-8" aria-label="Live events">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-0.5 h-4 bg-red-500" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-red-500" style={MONO}>
+              Live Now
+            </span>
+            <span
+              className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 border"
+              style={{ ...MONO, backgroundColor: '#DC262618', color: '#F87171', borderColor: '#DC262635' }}
+            >
+              {liveEvents.length} active
+            </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[#27272A]">
             {liveEvents.map(e => <EventCard key={e._id} event={e} />)}
           </div>
         </section>
       )}
 
-      {/* Filter tabs */}
-      <nav className="flex gap-2 mb-6 overflow-x-auto pb-2" role="tablist" aria-label="Event filters">
+      {/* Filter pills — flat Swiss style, no pill shapes */}
+      <nav className="flex gap-1.5 mb-6 overflow-x-auto pb-1" role="tablist" aria-label="Event filters">
         {FILTERS.map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             role="tab"
             aria-selected={filter === f}
-            className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest border-2 transition-all whitespace-nowrap ${
+            className={`px-4 py-2 text-[10px] font-semibold uppercase tracking-widest border transition-none whitespace-nowrap cursor-pointer ${
               filter === f
-                ? 'bg-amber-900 border-amber-900 text-amber-50 shadow-md -translate-y-0.5'
-                : 'bg-white border-stone-200 text-stone-500 hover:border-amber-400 hover:text-amber-900'
+                ? 'bg-[#2563EB] border-[#2563EB] text-white'
+                : 'bg-[#09090B] border-[#27272A] text-zinc-500 hover:border-zinc-500 hover:text-zinc-300'
             }`}
-            style={{ borderRadius: '8px 20px 8px 20px' }}
+            style={MONO}
           >
             {FILTER_LABELS[f]}
             {f === 'live' && liveEvents.length > 0 && (
-              <span className="ml-1.5 w-2 h-2 bg-red-500 rounded-full inline-block animate-pulse" />
+              <span
+                className="ml-2 text-[9px] font-bold px-1 py-0.5 border"
+                style={{ backgroundColor: '#DC262618', color: '#F87171', borderColor: '#DC262635' }}
+              >
+                {liveEvents.length}
+              </span>
             )}
           </button>
         ))}
@@ -103,16 +121,17 @@ const PitchArenaPage = () => {
       {/* Event grid */}
       <section aria-label="Events">
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[#27272A]">
             {[0, 1, 2, 3, 4, 5].map(i => <SkeletonCard key={i} />)}
           </div>
         ) : filteredEvents.length === 0 ? (
-          <div className="text-center py-16 placard bg-stone-50 border-dashed border-2 border-stone-200" style={{ borderRadius: '16px 48px 16px 48px' }}>
-            <p className="text-stone-400 font-black uppercase tracking-widest text-sm">No events found</p>
-            <p className="text-stone-400 text-sm mt-2">Check back later for exciting pitch events!</p>
+          <div className="bg-[#18181B] border border-dashed border-[#27272A] py-16 text-center">
+            <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-semibold" style={MONO}>
+              No events match the selected filter.
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[#27272A]">
             {filteredEvents.map(e => <EventCard key={e._id} event={e} />)}
           </div>
         )}
@@ -120,14 +139,14 @@ const PitchArenaPage = () => {
 
       <MyPitchEvents />
 
-      {/* Organizer FAB */}
+      {/* Organizer Create Button — sharp square, no rounded-full, no hover:scale */}
       {isOrganizer && (
         <button
           onClick={() => setShowCreate(true)}
-          className="fixed bottom-8 right-8 w-14 h-14 bg-amber-900 text-amber-50 rounded-full shadow-xl hover:bg-amber-800 transition-all flex items-center justify-center z-40 hover:scale-110"
+          className="fixed bottom-8 right-8 bg-[#2563EB] text-white w-12 h-12 flex items-center justify-center z-40 hover:bg-blue-500 transition-colors"
           aria-label="Create new event"
         >
-          <Plus size={28} />
+          <Plus size={22} />
         </button>
       )}
 
@@ -137,6 +156,7 @@ const PitchArenaPage = () => {
           onCreated={() => fetchEvents()}
         />
       )}
+      </div>
     </div>
   );
 };

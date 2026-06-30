@@ -4,14 +4,14 @@ import { Save } from 'lucide-react';
 import { API_BASE_URL } from '@/config';
 
 const Block = ({ title, name, rowSpan, colSpan, extraClasses = '', value, onChange, onBlur }) => (
-  <div className={`flex flex-col bg-[#ebe9e4] border-2 border-stone-200 p-5 ${rowSpan} ${colSpan} ${extraClasses}`}>
-    <h3 className="font-black text-amber-900 border-b-2 border-amber-300 pb-3 mb-3 text-sm uppercase tracking-widest font-serif-custom">{title}</h3>
+  <div className={`flex flex-col bg-[#18181B] p-5 border-[#27272A] ${rowSpan} ${colSpan} ${extraClasses} rounded-sm`}>
+    <h3 className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 border-b border-[#27272A] pb-2 mb-3">{title}</h3>
     <textarea
       name={name}
       value={value || ''}
       onChange={onChange}
       onBlur={onBlur}
-      className="w-full h-full flex-grow resize-none border-none focus:ring-0 text-sm p-0 text-stone-700 font-medium leading-relaxed bg-transparent"
+      className="w-full h-full flex-grow resize-none border-none focus:ring-0 text-xs p-0 text-zinc-200 placeholder-zinc-700 leading-relaxed bg-transparent focus:outline-none"
       placeholder={`Blueprint ${title.toLowerCase()}...`}
     />
   </div>
@@ -48,9 +48,9 @@ const BusinessCanvas = ({ teamId }) => {
 
   const handleChange = (e) => setCanvas({ ...canvas, [e.target.name]: e.target.value });
 
-  const handleSave = async () => {
+  const handleSave = async (showToast = true) => {
     setSaving(true);
-    setMessage('');
+    if (showToast) setMessage('');
     try {
       const res = await fetch(`${API_BASE_URL}/teams/${teamId}/canvas`, {
         method: 'PUT',
@@ -58,58 +58,64 @@ const BusinessCanvas = ({ teamId }) => {
         body: JSON.stringify(canvas)
       });
       if (!res.ok) throw new Error('Failed to save canvas');
-      setMessage('Canvas updated successfully!');
-      setTimeout(() => setMessage(''), 3000);
+      if (showToast) {
+        setMessage('Canvas updated successfully!');
+        setTimeout(() => setMessage(''), 3000);
+      }
     } catch (err) {
-      setMessage(err.message);
+      if (showToast) setMessage(err.message);
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="placard p-8 bg-[#ebe9e4] relative overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] mix-blend-overlay pointer-events-none"></div>
+    <div className="bg-[#18181B] border border-[#27272A] rounded-sm p-6 relative overflow-hidden">
       
-      <div className="flex justify-between items-center mb-8 relative z-10 border-b-2 border-amber-300 pb-4">
-        <h2 className="text-3xl font-black text-amber-900 font-serif-custom">Business Model Canvas</h2>
+      <div className="flex justify-between items-center mb-8 relative z-10 border-b border-[#27272A] pb-4">
+        <h2 className="text-base font-bold text-white tracking-tight">Business Model Canvas</h2>
         <div className="flex items-center gap-4">
-          {message && <span className="text-[10px] text-teal-800 bg-teal-100/80 px-3 py-1.5 uppercase tracking-widest font-black border border-teal-200 shadow-sm" style={{borderRadius: '4px 8px 4px 8px'}}>{message}</span>}
+          {message && (
+            <span className="text-[9px] font-mono font-semibold uppercase tracking-widest text-green-400 bg-green-950/20 border border-green-500/30 px-3 py-1.5 rounded-sm">
+              {message}
+            </span>
+          )}
           <button 
-            onClick={handleSave} 
+            type="button"
+            onClick={() => handleSave(true)} 
             disabled={saving}
-            className="gilded-btn px-6 py-2 text-xs"
+            className="px-4 py-2 bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-[9px] font-semibold uppercase tracking-widest flex items-center gap-1.5 rounded-sm transition duration-150"
           >
-            <Save size={18} className="icon-tactile" /> {saving ? 'Compiling...' : 'Commit Canvas'}
+            <Save size={12} /> <span>{saving ? 'Compiling...' : 'Commit Canvas'}</span>
           </button>
         </div>
       </div>
 
       {/* Grid Canvas */}
-      <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[minmax(180px,auto)_minmax(180px,auto)_minmax(180px,auto)] gap-0 overflow-hidden border-[3px] border-amber-300 relative z-10 shadow-[4px_6px_0px_#d97706]" style={{borderRadius: '12px 32px 12px 32px'}}>
+      <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[minmax(180px,auto)_minmax(180px,auto)_minmax(180px,auto)] gap-0 overflow-hidden border border-[#27272A] relative z-10 rounded-sm">
         
         {/* Top Row - 5 blocks width */}
-        <Block title="Key Partners" name="keyPartners" value={canvas.keyPartners} onChange={handleChange} onBlur={handleSave} rowSpan="md:row-span-2" colSpan="md:col-span-1" extraClasses="border-r border-b" />
+        <Block title="Key Partners" name="keyPartners" value={canvas.keyPartners} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="md:row-span-2" colSpan="md:col-span-1" extraClasses="border-r border-b" />
         
         {/* Activities and Resources split Middle Left */}
         <div className="md:row-span-2 md:col-span-1 flex flex-col">
-          <Block title="Key Activities" name="keyActivities" value={canvas.keyActivities} onChange={handleChange} onBlur={handleSave} rowSpan="flex-1" colSpan="" extraClasses="border-b" />
-          <Block title="Key Resources" name="keyResources" value={canvas.keyResources} onChange={handleChange} onBlur={handleSave} rowSpan="flex-1" colSpan="" extraClasses="border-b" />
+          <Block title="Key Activities" name="keyActivities" value={canvas.keyActivities} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="flex-1" colSpan="" extraClasses="border-b" />
+          <Block title="Key Resources" name="keyResources" value={canvas.keyResources} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="flex-1" colSpan="" extraClasses="border-b" />
         </div>
 
-        <Block title="Value Propositions" name="valuePropositions" value={canvas.valuePropositions} onChange={handleChange} onBlur={handleSave} rowSpan="md:row-span-2" colSpan="md:col-span-1" extraClasses="border-l border-r border-b" />
+        <Block title="Value Propositions" name="valuePropositions" value={canvas.valuePropositions} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="md:row-span-2" colSpan="md:col-span-1" extraClasses="border-l border-r border-b" />
         
         {/* Relationships and Channels split Middle Right */}
         <div className="md:row-span-2 md:col-span-1 flex flex-col">
-          <Block title="Customer Relationships" name="customerRelationships" value={canvas.customerRelationships} onChange={handleChange} onBlur={handleSave} rowSpan="flex-1" colSpan="" extraClasses="border-b" />
-          <Block title="Channels" name="channels" value={canvas.channels} onChange={handleChange} onBlur={handleSave} rowSpan="flex-1" colSpan="" extraClasses="border-b" />
+          <Block title="Customer Relationships" name="customerRelationships" value={canvas.customerRelationships} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="flex-1" colSpan="" extraClasses="border-b" />
+          <Block title="Channels" name="channels" value={canvas.channels} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="flex-1" colSpan="" extraClasses="border-b" />
         </div>
 
-        <Block title="Customer Segments" name="customerSegments" value={canvas.customerSegments} onChange={handleChange} onBlur={handleSave} rowSpan="md:row-span-2" colSpan="md:col-span-1" extraClasses="border-l border-b" />
+        <Block title="Customer Segments" name="customerSegments" value={canvas.customerSegments} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="md:row-span-2" colSpan="md:col-span-1" extraClasses="border-l border-b" />
 
         {/* Bottom Row - Cost Structure & Revenue Streams */}
-        <Block title="Cost Structure" name="costStructure" value={canvas.costStructure} onChange={handleChange} onBlur={handleSave} rowSpan="md:row-span-1" colSpan="md:col-span-2" extraClasses="border-r" />
-        <Block title="Revenue Streams" name="revenueStreams" value={canvas.revenueStreams} onChange={handleChange} onBlur={handleSave} rowSpan="md:row-span-1" colSpan="md:col-span-3" extraClasses="" />
+        <Block title="Cost Structure" name="costStructure" value={canvas.costStructure} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="md:row-span-1" colSpan="md:col-span-2" extraClasses="border-r" />
+        <Block title="Revenue Streams" name="revenueStreams" value={canvas.revenueStreams} onChange={handleChange} onBlur={() => handleSave(false)} rowSpan="md:row-span-1" colSpan="md:col-span-3" extraClasses="" />
 
       </div>
     </div>

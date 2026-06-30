@@ -11,7 +11,11 @@ export default function useCanvasSocket({ teamId, user, enabled = true }) {
   const listenersRef = useRef({});
 
   useEffect(() => {
-    if (!enabled || !teamId || !user?._id) return undefined;
+    if (!enabled || !teamId || !user?._id) {
+      setSectionFocus({});
+      setActiveUsers([]);
+      return undefined;
+    }
 
     let mounted = true;
     let s;
@@ -65,6 +69,8 @@ export default function useCanvasSocket({ teamId, user, enabled = true }) {
         s.removeAllListeners();
         s.disconnect();
       }
+      setSectionFocus({});
+      setActiveUsers([]);
     };
   }, [enabled, teamId, user?._id]);
 

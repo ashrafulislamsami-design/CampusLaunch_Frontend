@@ -22,15 +22,14 @@ const TAG_OPTIONS = [
 
 // ─── Tag colour ───────────────────────────────────────────────────────────────
 const TAG_STYLES = {
-  'Looking for co-founder': 'bg-amber-50 text-amber-900 border-amber-300',
-  'I have an idea':          'bg-teal-50  text-teal-900  border-teal-300',
-  'Ready to join a team':    'bg-stone-50 text-stone-700 border-stone-300',
+  'Looking for co-founder': 'bg-purple-950/20 text-purple-400 border-purple-500/20',
+  'I have an idea':          'bg-teal-950/20   text-teal-400  border-teal-500/20',
+  'Ready to join a team':    'bg-zinc-950/20   text-zinc-400  border-zinc-500/20',
 };
 
 // ─── Profile Card (mirrors FundingCard's aesthetic exactly) ──────────────────
 const ProfileCard = ({ profile }) => {
   const completeness = profile.completeness ?? 0;
-  const barColor = completeness < 40 ? '#ef4444' : completeness < 70 ? '#f59e0b' : '#0d9488';
 
   // Pick icon for tag
   const TagIcon =
@@ -40,79 +39,62 @@ const ProfileCard = ({ profile }) => {
 
   return (
     <div
-      className="placard p-8 group flex flex-col justify-between bg-white border-2 border-stone-200 shadow-[4px_6px_0px_#d97706] hover:-translate-y-1 hover:shadow-[6px_8px_0px_#d97706] transition-all relative overflow-hidden"
-      style={{ borderRadius: '12px 32px 12px 32px' }}
+      className="bg-[#18181B] border border-[#27272A] p-6 flex flex-col justify-between rounded-sm relative overflow-hidden transition-colors"
     >
-      {/* Woven texture */}
-      <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/woven.png')] pointer-events-none" />
-
       <div>
         {/* Header row — icon + tag badge */}
         <div className="flex justify-between items-start mb-6 relative z-10">
-          <div className="w-14 h-14 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-300 text-amber-700 rounded-xl flex items-center justify-center shadow-sm transform -rotate-3 group-hover:rotate-0 transition">
-            <TagIcon size={26} className="text-amber-900" />
+          <div className="w-10 h-10 bg-[#09090B] border border-[#27272A] text-zinc-400 rounded-sm flex items-center justify-center">
+            <TagIcon size={18} className="text-zinc-300" />
           </div>
-          <span
-            className={`px-3 py-1 border-2 text-[10px] font-black uppercase tracking-widest ${TAG_STYLES[profile.profileTag] || TAG_STYLES['Ready to join a team']}`}
-            style={{ borderRadius: '4px 10px 4px 10px' }}
-          >
+          <span className={`px-2 py-0.5 border text-[8px] font-mono font-bold uppercase tracking-widest rounded-sm ${TAG_STYLES[profile.profileTag] || TAG_STYLES['Ready to join a team']}`}>
             {profile.profileTag}
           </span>
         </div>
 
         {/* Name + university */}
-        <h3 className="text-2xl font-black text-amber-900 mb-1 font-serif-custom leading-tight">
+        <h3 className="text-lg font-bold text-white mb-1 leading-tight">
           {profile.name}
         </h3>
-        <p className="text-stone-500 text-xs font-black uppercase tracking-widest mb-4">
+        <p className="text-zinc-500 font-mono text-[9px] uppercase tracking-widest mb-4">
           {profile.university || 'University not listed'}
         </p>
 
         {/* Meta row */}
-        <div className="space-y-3 mb-6">
-          <div className="flex items-center gap-3 text-stone-700 font-sans-custom font-medium">
-            <div className="p-1.5 bg-stone-100 rounded-lg text-teal-700">
-              <Clock size={15} />
-            </div>
-            <span className="text-sm">
-              Availability: <span className="font-bold text-amber-900">{profile.weeklyAvailability} hrs/week</span>
+        <div className="space-y-2.5 mb-5">
+          <div className="flex items-center gap-2.5 text-zinc-300 font-mono text-[10px] uppercase tracking-wide">
+            <Clock size={12} className="text-[#2563EB]" />
+            <span>
+              Availability: <span className="font-bold text-white">{profile.weeklyAvailability} hrs/wk</span>
             </span>
           </div>
-          <div className="flex items-center gap-3 text-stone-700 font-sans-custom font-medium">
-            <div className="p-1.5 bg-stone-100 rounded-lg text-amber-700">
-              <Code2 size={15} />
-            </div>
-            <span className="text-sm">
-              Skills: <span className="font-bold text-amber-900">{profile.skills.slice(0, 3).join(', ')}{profile.skills.length > 3 ? ` +${profile.skills.length - 3}` : ''}</span>
+          <div className="flex items-center gap-2.5 text-zinc-300 font-mono text-[10px] uppercase tracking-wide">
+            <Code2 size={12} className="text-[#2563EB]" />
+            <span>
+              Skills: <span className="font-bold text-white">{profile.skills.slice(0, 3).join(', ')}{profile.skills.length > 3 ? ` +${profile.skills.length - 3}` : ''}</span>
             </span>
           </div>
         </div>
 
         {/* Motivation snippet */}
         {profile.motivation && (
-          <div
-            className="bg-stone-50/50 p-4 border border-stone-200 mb-4"
-            style={{ borderRadius: '8px 16px 8px 16px' }}
-          >
-            <h4 className="text-[10px] font-black text-amber-900 font-serif-custom uppercase tracking-widest mb-2 flex items-center gap-2">
-              <UserCheck size={12} className="text-teal-700" /> Motivation
+          <div className="bg-[#09090B] border border-[#27272A] p-3 mb-4 rounded-sm">
+            <h4 className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+              <UserCheck size={11} className="text-[#2563EB]" /> Motivation
             </h4>
-            <p className="text-stone-600 text-[11px] font-medium leading-relaxed italic line-clamp-3">
-              {profile.motivation}
+            <p className="text-zinc-400 text-xs leading-relaxed italic line-clamp-3">
+              "{profile.motivation}"
             </p>
           </div>
         )}
 
         {/* Startup idea snippet */}
         {profile.startupIdea && (
-          <div
-            className="bg-stone-50/50 p-4 border border-stone-200 mb-4"
-            style={{ borderRadius: '8px 16px 8px 16px' }}
-          >
-            <h4 className="text-[10px] font-black text-amber-900 font-serif-custom uppercase tracking-widest mb-2 flex items-center gap-2">
-              <Award size={12} className="text-amber-600" /> Startup Idea
+          <div className="bg-[#09090B] border border-[#27272A] p-3 mb-4 rounded-sm">
+            <h4 className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+              <Award size={11} className="text-[#2563EB]" /> Startup Idea
             </h4>
-            <p className="text-stone-600 text-[11px] font-medium leading-relaxed line-clamp-2">
+            <p className="text-zinc-400 text-xs leading-relaxed line-clamp-2">
               {profile.startupIdea}
             </p>
           </div>
@@ -120,16 +102,16 @@ const ProfileCard = ({ profile }) => {
 
         {/* Completeness strip */}
         <div className="mb-6">
-          <div className="flex justify-between text-[10px] font-bold text-stone-400 mb-1.5">
+          <div className="flex justify-between text-[9px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">
             <span className="flex items-center gap-1">
               <CheckCircle2 size={10} /> Completeness
             </span>
-            <span>{completeness}%</span>
+            <span className="text-[#2563EB]">{completeness}%</span>
           </div>
-          <div className="w-full bg-stone-100 rounded-full h-1.5">
+          <div className="w-full bg-[#09090B] border border-[#27272A] h-[2px]">
             <div
-              className="h-1.5 rounded-full transition-all"
-              style={{ width: `${completeness}%`, backgroundColor: barColor }}
+              className="h-full bg-[#2563EB] transition-all"
+              style={{ width: `${completeness}%` }}
             />
           </div>
         </div>
@@ -138,10 +120,10 @@ const ProfileCard = ({ profile }) => {
       {/* CTA */}
       <Link
         to={`/profiles/${profile.userId}`}
-        className="flex items-center justify-center gap-2 w-full text-center bg-amber-900 text-amber-50 font-black py-3 uppercase tracking-widest text-[10px] border-2 border-transparent hover:bg-amber-100 hover:text-amber-900 hover:border-amber-400 transition relative z-10"
-        style={{ borderRadius: '8px 24px 8px 24px' }}
+        className="flex items-center justify-center gap-2 w-full text-center bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-[9px] font-semibold uppercase tracking-widest py-3 rounded-sm transition-colors duration-150"
       >
-        View Profile <ExternalLink size={12} />
+        <span>View Profile</span>
+        <ExternalLink size={10} />
       </Link>
     </div>
   );
@@ -189,130 +171,130 @@ export default function BrowseProfiles() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-paper">
+    <div className="min-h-screen bg-[#09090B] w-full text-zinc-100">
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
 
-      {/* ── Hero banner ──────────────────────────────────────────────── */}
-      <div className="mb-12">
-        <div
-          className="text-center md:text-left mb-10 overflow-hidden relative p-12 jewel-teal shadow-xl"
-          style={{ borderRadius: '16px 48px 16px 48px' }}
-        >
-          <div className="absolute inset-0 opacity-[0.05] bg-black pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="md:w-2/3">
-              <h1 className="text-5xl font-black mb-4 font-serif-custom text-teal-50 drop-shadow-md tracking-tight">
-                The Founder Network
-              </h1>
-              <p className="text-teal-100 text-lg font-sans-custom font-medium max-w-2xl leading-relaxed">
-                Discover student entrepreneurs, find your co-founder match, and build something that matters — together.
-              </p>
-            </div>
-            <div className="flex-shrink-0 bg-white/10 p-6 backdrop-blur-md border border-white/20 rounded-3xl">
-              <Users size={80} className="text-teal-100 opacity-60 transform rotate-12" />
-            </div>
-          </div>
+        {/* Header */}
+        <div className="mb-8 pb-4 border-b border-[#27272A] relative">
+          <h1 className="text-base font-bold text-white tracking-tight">THE FOUNDER NETWORK</h1>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mt-1">
+            Discover student entrepreneurs, match with co-founders, and build together
+          </p>
         </div>
 
-        {/* Live tracker */}
-        <div className="flex items-center gap-2 mb-4 px-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-          <span className="tracking-widest text-[10px] uppercase font-bold text-amber-900/40">
-            Currently tracking {total} student founders in the network
-          </span>
+        {/* Live tracker metric */}
+        <div className="flex items-center gap-2 mb-6 font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+          <div className="w-1.5 h-1.5 bg-[#2563EB]" />
+          <span>Currently tracking {total} student founders</span>
         </div>
 
-        {/* ── Filter / Search hub ──────────────────────────────────────── */}
-        <div className="placard p-8 border-t-4 border-amber-400 bg-stone-50/50 flex flex-col gap-6 shadow-xl mb-12">
-
+        {/* ── Filter / Search control bar ── */}
+        <div className="bg-[#18181B] border border-[#27272A] rounded-sm p-6 mb-8 flex flex-col gap-6">
           {/* Search bar */}
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">
-              <Search size={20} />
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+              <Search size={16} />
             </span>
             <input
               type="text"
               placeholder="Search by name, university, idea, or motivation…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-white border-2 border-stone-200 focus:border-amber-400 focus:ring-0 text-stone-800 font-bold tracking-tight rounded-2xl shadow-inner transition-all hover:border-stone-300"
+              className="w-full pl-12 pr-4 py-3 bg-[#09090B] border border-[#27272A] focus:border-[#2563EB] focus:outline-none text-white text-sm rounded-sm transition-colors duration-150"
             />
           </div>
 
-          {/* Tag filter */}
-          <div>
-            <div className="flex items-center gap-2 mb-3 text-stone-500 font-black uppercase tracking-widest text-[10px]">
-              <Filter size={13} /> Status Tag:
+          {/* Filter controls row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4 border-t border-[#27272A]">
+            {/* Tag filter */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 text-zinc-500 font-mono uppercase tracking-widest text-[9px]">
+                <Filter size={10} /> Status Tag:
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {TAG_OPTIONS.map(({ label, value }) => (
+                  <button
+                    key={label}
+                    onClick={() => { setSelectedTag(value); setPage(1); }}
+                    className={`px-3 py-1.5 text-[9px] font-mono font-bold uppercase tracking-widest border transition duration-150 rounded-sm ${
+                      selectedTag === value
+                        ? 'bg-[#2563EB] border-[#2563EB] text-white'
+                        : 'bg-[#09090B] border-[#27272A] text-zinc-500 hover:text-zinc-300 hover:border-zinc-500'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {TAG_OPTIONS.map(({ label, value }) => (
-                <button
-                  key={label}
-                  onClick={() => { setSelectedTag(value); setPage(1); }}
-                  className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest transition-all border-2
-                    ${selectedTag === value
-                      ? 'bg-amber-900 border-amber-900 text-amber-50 shadow-md transform -translate-y-0.5'
-                      : 'bg-white border-stone-200 text-stone-500 hover:border-amber-400 hover:text-amber-900'}`}
-                  style={{ borderRadius: '8px 20px 8px 20px' }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Skill filter */}
-          <div>
-            <div className="flex items-center gap-2 mb-3 text-stone-500 font-black uppercase tracking-widest text-[10px]">
-              <Code2 size={13} /> Filter by Skill:
+            {/* Skill filter */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 text-zinc-500 font-mono uppercase tracking-widest text-[9px]">
+                <Code2 size={10} /> Filter by Skill:
+              </div>
+              <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto scrollbar-thin p-1.5 bg-[#09090B] border border-[#27272A] rounded-sm">
+                {SKILL_OPTIONS.map(skill => (
+                  <button
+                    key={skill}
+                    onClick={() => toggleSkill(skill)}
+                    className={`px-2.5 py-1 text-[8px] font-mono font-bold uppercase tracking-widest capitalize border transition duration-150 rounded-sm ${
+                      selectedSkills.includes(skill)
+                        ? 'bg-[#2563EB] border-[#2563EB] text-white'
+                        : 'bg-[#18181B] border-[#27272A] text-zinc-500 hover:text-zinc-300 hover:border-zinc-500'
+                    }`}
+                  >
+                    {skill}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {SKILL_OPTIONS.map(skill => (
-                <button
-                  key={skill}
-                  onClick={() => toggleSkill(skill)}
-                  className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest capitalize border-2 transition-all
-                    ${selectedSkills.includes(skill)
-                      ? 'bg-teal-800 border-teal-800 text-teal-50 shadow-[2px_2px_0px_#0f766e]'
-                      : 'bg-white border-stone-200 text-stone-500 hover:border-teal-400 hover:text-teal-800'}`}
-                  style={{ borderRadius: '6px 16px 6px 16px' }}
-                >
-                  {skill}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Availability filter */}
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest flex items-center gap-2">
-              <Clock size={12} /> Min hrs/week:
-            </span>
-            <input
-              type="number"
-              className="border-2 border-stone-200 bg-white px-4 py-2 text-sm font-bold w-24 focus:border-amber-400 focus:outline-none transition-all"
-              style={{ borderRadius: '8px 20px 8px 20px' }}
-              value={minAvail}
-              onChange={e => { setMinAvail(e.target.value); setPage(1); }}
-              min={0}
-              placeholder="0"
-            />
+            {/* Availability filter */}
+            <div>
+              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest flex items-center gap-2 mb-3">
+                <Clock size={10} /> Min hrs/week:
+              </span>
+              <input
+                type="number"
+                className="border border-[#27272A] bg-[#09090B] px-3 py-2 text-xs font-mono text-white w-24 focus:border-[#2563EB] focus:outline-none rounded-sm transition-colors duration-150"
+                value={minAvail}
+                onChange={e => { setMinAvail(e.target.value); setPage(1); }}
+                min={0}
+                placeholder="0"
+              />
+            </div>
           </div>
         </div>
 
-        {/* ── Grid ─────────────────────────────────────────────────────── */}
+        {/* ── Grid ── */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-72 bg-stone-100 rounded-3xl border-2 border-dashed border-stone-200" />
+              <div key={i} className="bg-[#18181B] border border-[#27272A] p-6 rounded-sm flex flex-col justify-between h-[340px]">
+                <div>
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="w-10 h-10 skeleton-box" />
+                    <div className="w-24 h-5 skeleton-box" />
+                  </div>
+                  <div className="w-2/3 h-5 skeleton-box mb-2" />
+                  <div className="w-1/2 h-3.5 skeleton-box mb-6" />
+                  <div className="space-y-3 mb-6">
+                    <div className="w-3/4 h-3.5 skeleton-box" />
+                    <div className="w-5/6 h-3.5 skeleton-box" />
+                  </div>
+                  <div className="space-y-2 mb-6">
+                    <div className="w-full h-2 skeleton-box" />
+                  </div>
+                </div>
+                <div className="w-full h-10 skeleton-box" />
+              </div>
             ))}
           </div>
         ) : profiles.length === 0 ? (
-          <div
-            className="text-center py-20 placard bg-stone-50 border-dashed border-2 border-stone-200"
-            style={{ borderRadius: '16px 48px 16px 48px' }}
-          >
-            <Users size={40} className="mx-auto text-stone-300 mb-4" />
-            <p className="text-stone-400 font-black uppercase tracking-widest text-sm">
+          <div className="text-center py-20 bg-[#18181B] border border-dashed border-[#27272A] rounded-sm flex flex-col items-center justify-center gap-4">
+            <Users size={32} className="text-zinc-700" />
+            <p className="text-zinc-500 font-mono uppercase tracking-widest text-[10px] font-semibold">
               No founders match your search filters.
             </p>
           </div>
@@ -330,21 +312,17 @@ export default function BrowseProfiles() {
                 <button
                   disabled={page === 1}
                   onClick={() => setPage(p => p - 1)}
-                  className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest border-2 border-stone-200 bg-white text-stone-500 hover:border-amber-400 hover:text-amber-900 transition-all disabled:opacity-30"
-                  style={{ borderRadius: '8px 20px 8px 20px' }}
+                  className="px-4 py-2 text-[9px] font-mono font-semibold uppercase tracking-widest border border-[#27272A] bg-[#18181B] text-zinc-400 hover:text-white rounded-sm disabled:opacity-30 transition-colors"
                 >
                   ← Prev
                 </button>
-                <span className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest bg-amber-900 text-amber-50 border-2 border-amber-900"
-                  style={{ borderRadius: '20px 8px 20px 8px' }}
-                >
+                <span className="px-4 py-2 text-[9px] font-mono font-semibold uppercase tracking-widest bg-[#2563EB] text-white border border-[#2563EB] rounded-sm">
                   Page {page}
                 </span>
                 <button
                   disabled={profiles.length < 12}
                   onClick={() => setPage(p => p + 1)}
-                  className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest border-2 border-stone-200 bg-white text-stone-500 hover:border-amber-400 hover:text-amber-900 transition-all disabled:opacity-30"
-                  style={{ borderRadius: '20px 8px 20px 8px' }}
+                  className="px-4 py-2 text-[9px] font-mono font-semibold uppercase tracking-widest border border-[#27272A] bg-[#18181B] text-zinc-400 hover:text-white rounded-sm disabled:opacity-30 transition-colors"
                 >
                   Next →
                 </button>

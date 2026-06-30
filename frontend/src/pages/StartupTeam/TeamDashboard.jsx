@@ -300,406 +300,456 @@ const TeamDashboard = () => {
     return [...docs, ...reps].sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [team?.documents, reports]);
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading workspace...</div>;
-  if (!team) return <div className="p-8 text-center text-red-500">Team not found or Unauthorized.</div>;
+  if (loading) return <div className="min-h-screen bg-[#09090B] flex items-center justify-center"><span className="text-zinc-600 text-[10px] uppercase tracking-widest font-semibold" style={{fontFamily:"'Geist Mono',monospace"}}>Loading workspace...</span></div>;
+  if (!team) return <div className="min-h-screen bg-[#09090B] flex items-center justify-center"><span className="text-red-500 text-[10px] uppercase tracking-widest font-semibold" style={{fontFamily:"'Geist Mono',monospace"}}>Team not found or Unauthorized.</span></div>;
 
   // Group tasks for Kanban
   const columns = { 'To Do': [], 'In Progress': [], 'Done': [] };
   team.tasks.forEach(task => { if (columns[task.status]) columns[task.status].push(task); });
 
+  const MONO  = { fontFamily: "'Geist Mono', 'SF Mono', monospace" };
+  const OUTFIT = { fontFamily: "'Outfit', 'Inter', sans-serif" };
+
+  const COLUMN_ACCENT = { 'To Do': '#71717A', 'In Progress': '#2563EB', 'Done': '#16A34A' };
+
+  const tabStyle = (tab, activeColor = '#2563EB') => ({
+    ...MONO,
+    backgroundColor: activeTab === tab ? activeColor : '#18181B',
+    color:           activeTab === tab ? 'white'       : '#71717A',
+    borderColor:     activeTab === tab ? activeColor   : '#27272A',
+  });
+
   return (
-    <div className="min-h-screen bg-slate-50 w-full">
-      <div className="max-w-[1880px] mx-auto py-8 px-4 md:px-12 lg:px-20 flex flex-col md:flex-row gap-8">
+    <div className="min-h-screen bg-[#09090B]">
+      <div className="max-w-[1880px] mx-auto py-8 px-4 md:px-10 flex flex-col md:flex-row gap-6">
 
-      {/* SIDEBAR: Details & Members */}
-      <div className="w-full md:w-1/5 space-y-6 flex-shrink-0">
-        <div className="placard p-6 relative group">
-          {isCEO && (
-             <button 
-               onClick={() => setShowEditProjectModal(true)} 
-               className="absolute top-4 right-4 text-amber-300 hover:text-amber-700 transition"
-               title="Edit Project Details"
-             >
-               <Pencil size={18} />
-             </button>
-          )}
-          <div className="flex items-start justify-between mb-2 pr-6">
-            <h2 className="text-2xl font-black text-amber-900 font-serif-custom">{team.name}</h2>
-            <a 
-              href={`/startup/${team._id}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="mt-0.5 text-teal-800 hover:text-teal-50 hover:bg-teal-700 bg-teal-100/50 p-2 border border-teal-200 rounded-lg transition duration-200 shadow-sm"
-              title="View Public Pitch"
-            >
-              <ExternalLink size={16} className="icon-tactile" />
-            </a>
-          </div>
-          <span className="inline-block px-3 py-1 bg-amber-100/50 text-amber-900 border border-amber-300 text-xs font-black tracking-widest uppercase mb-4" style={{borderRadius: '4px 8px 4px 8px'}}>
-            Stage: {team.stage}
-          </span>
-          <p className="text-stone-700 mb-4 font-sans-custom font-medium leading-relaxed">{team.problemStatement}</p>
-        </div>
-
-        <div className="placard p-6">
-          <div className="flex justify-between items-center mb-6 border-b-2 border-amber-200/50 pb-4">
-            <h3 className="text-xl font-black text-amber-900 flex items-center gap-2 font-serif-custom">
-              <Users size={24} className="text-teal-700 icon-tactile" /> Members
-            </h3>
-            <div className="flex items-center gap-2">
-              {roleMessage && <span className="text-[10px] text-teal-800 bg-teal-100/80 px-2 py-1 uppercase tracking-widest font-black border border-teal-200" style={{borderRadius: '4px 8px 4px 8px'}}>{roleMessage}</span>}
-              {isCEO && (
-                <button 
-                  onClick={() => setShowInviteModal(true)}
-                  className="gilded-btn px-4 py-1.5"
-                >
-                  + Invite
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Pending Invite for Current User */}
-          {team.members.find(m => m.userId._id === currentUserId && m.status === 'pending') && (
-            <div className="mb-6 p-4 bg-amber-50 border-2 border-amber-200 rounded-lg" style={{borderRadius: '8px 16px 8px 16px'}}>
-              <p className="text-sm font-black text-amber-900 mb-3">You have a pending invite to join {team.name}</p>
+        {/* ── SIDEBAR (Left Column) ─────────────────────────── */}
+        <aside className="w-full md:w-80 shrink-0 flex flex-col gap-4">
+          
+          {/* Project card (Team Info) */}
+          <section className="bg-[#18181B] border border-[#27272A] rounded-sm p-5 relative">
+            {isCEO && (
               <button
-                onClick={handleAcceptInvite}
-                disabled={acceptingInvite}
-                className="w-full px-4 py-2 bg-teal-700 text-teal-50 font-black uppercase tracking-widest rounded hover:bg-teal-800 disabled:opacity-50 transition"
-                style={{borderRadius: '4px 8px 4px 8px'}}
+                onClick={() => setShowEditProjectModal(true)}
+                className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-300 transition-colors"
+                title="Edit Project Details"
               >
-                {acceptingInvite ? 'Accepting...' : 'Accept Invite'}
+                <Pencil size={14} />
               </button>
+            )}
+            <div className="flex items-start justify-between mb-3 pr-6">
+              <h2 className="text-sm font-bold text-zinc-100 tracking-tight" style={OUTFIT}>
+                {team.name}
+              </h2>
+              <a
+                href={`/startup/${team._id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 p-1 text-zinc-600 hover:text-zinc-100 hover:bg-[#27272A] transition-colors rounded-sm"
+                title="View Public Pitch"
+              >
+                <ExternalLink size={12} />
+              </a>
             </div>
-          )}
+            
+            <div className="mb-4">
+              <span className="inline-block px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-widest bg-[#2563EB15] text-[#60A5FA] border border-[#2563EB35] rounded-sm">
+                {team.stage}
+              </span>
+            </div>
+            <p className="text-zinc-400 text-xs leading-relaxed font-sans">
+              {team.problemStatement}
+            </p>
+          </section>
 
-          {/* Accepted Members Only */}
-          <ul className="space-y-4">
-            {team.members
-              .filter(m => m.status === 'accepted')
-              .map((m) => (
-                <li key={m._id} className="flex justify-between items-start gap-3 bg-white border-2 border-stone-200 px-4 py-3 shadow-[2px_3px_0px_#e7e5e4] hover:border-amber-300 transition-colors" style={{borderRadius: '8px 16px 8px 16px'}}>
-                  <div className="flex-1 flex flex-col">
-                    <span className="text-sm font-black text-stone-900 uppercase tracking-wider break-words">{m.userId?.name || 'User'}</span>
-                    <span className="text-[10px] text-stone-400 font-bold break-words">{m.userId?.email}</span>
+          {/* Members card */}
+          <section className="bg-[#18181B] border border-[#27272A] rounded-sm flex flex-col">
+            <div className="flex justify-between items-center px-5 py-3 border-b border-[#27272A]">
+              <span className="text-[10px] font-mono font-semibold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">
+                <Users size={12} className="text-zinc-500" /> Members
+              </span>
+              <div className="flex items-center gap-2">
+                {roleMessage && (
+                  <span className="text-[9px] text-green-400 font-mono font-semibold uppercase tracking-widest">
+                    {roleMessage}
+                  </span>
+                )}
+                {isCEO && (
+                  <button
+                    onClick={() => setShowInviteModal(true)}
+                    className="text-[9px] font-mono font-semibold uppercase tracking-widest px-2.5 py-1 bg-[#2563EB] text-white hover:bg-blue-700 rounded-sm transition-colors"
+                  >
+                    + Invite
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Pending invite banner */}
+            {team.members.find(m => m.userId._id === currentUserId && m.status === 'pending') && (
+              <div className="mx-4 my-3 p-3 bg-[#2563EB08] border border-[#2563EB25] rounded-sm">
+                <p className="text-xs text-zinc-300 mb-2 font-sans">
+                  You have a pending invite to join {team.name}
+                </p>
+                <button
+                  onClick={handleAcceptInvite}
+                  disabled={acceptingInvite}
+                  className="w-full px-3 py-1.5 bg-[#2563EB] text-white text-[9px] font-mono font-semibold uppercase tracking-widest hover:bg-blue-700 disabled:opacity-50 transition-colors rounded-sm"
+                >
+                  {acceptingInvite ? 'Accepting...' : 'Accept Invite'}
+                </button>
+              </div>
+            )}
+
+            {/* Member list */}
+            <ul className="flex flex-col divide-y divide-[#27272A]">
+              {team.members.filter(m => m.status === 'accepted').map(m => (
+                <li key={m._id} className="flex justify-between items-center gap-2 px-5 py-3 hover:bg-[#1E1E22] transition-colors">
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-semibold text-zinc-100 truncate" style={OUTFIT}>
+                      {m.userId?.name || 'User'}
+                    </span>
+                    <span className="text-[9px] font-mono text-zinc-500 truncate mt-0.5">
+                      {m.userId?.email}
+                    </span>
                   </div>
-                  
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     {isCEO && m.userId._id !== currentUserId ? (
-                      <div className="flex items-center gap-1">
-                        <select 
+                      <>
+                        <select
                           value={m.role}
                           disabled={updatingRole === m.userId._id}
-                          onChange={(e) => handleRoleChange(m.userId._id, e.target.value)}
-                          className="text-xs text-amber-900 font-black bg-amber-100/50 px-2 py-1 border border-amber-300 focus:ring-1 focus:ring-amber-500 cursor-pointer disabled:opacity-50 uppercase tracking-widest"
-                          style={{borderRadius: '4px 8px 4px 8px'}}
+                          onChange={e => handleRoleChange(m.userId._id, e.target.value)}
+                          className="text-[9px] text-zinc-300 font-mono font-semibold bg-[#09090B] px-2 py-1 border border-[#27272A] focus:border-[#2563EB] focus:outline-none uppercase tracking-widest disabled:opacity-50 rounded-sm cursor-pointer"
                         >
                           <option value="CTO">CTO</option>
                           <option value="CMO">CMO</option>
                           <option value="Designer">Designer</option>
                           <option value="Member">Member</option>
                         </select>
-                        <button 
+                        <button
                           onClick={() => handleRemoveMember(m.userId._id)}
-                          className="text-red-400 hover:text-red-600 transition p-1"
+                          className="p-1 text-zinc-600 hover:text-red-400 transition-colors"
                           title="Remove Member"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={12} />
                         </button>
-                      </div>
+                      </>
                     ) : (
-                      <span className="text-xs text-teal-900 font-black bg-teal-100/80 px-2 py-1 border border-teal-200 uppercase tracking-widest" style={{borderRadius: '4px 8px 4px 8px'}}>{m.role}</span>
+                      <span className="text-[9px] font-mono font-semibold text-zinc-500 uppercase tracking-widest">
+                        {m.role}
+                      </span>
                     )}
                   </div>
                 </li>
               ))}
-          </ul>
+              {team.members.filter(m => m.status === 'accepted').length === 0 && (
+                <li className="px-5 py-4 text-center text-[9px] text-zinc-600 font-mono uppercase tracking-widest font-semibold">
+                  No accepted members yet
+                </li>
+              )}
+            </ul>
+          </section>
 
-          {team.members.filter(m => m.status === 'accepted').length === 0 && (
-            <p className="text-center text-stone-400 py-4 italic">No accepted members yet</p>
-          )}
-        </div>
+          {/* Progress timeline */}
+          <section className="bg-[#18181B] border border-[#27272A] rounded-sm p-1">
+            <ProgressTimeline history={team.history} currentStage={team.stage} />
+          </section>
+        </aside>
 
-        {/* Journey Traction Placard */}
-        <div className="placard p-2 bg-[#fdfbf7]">
-          <ProgressTimeline history={team.history} currentStage={team.stage} />
-        </div>
-      </div>
+        {/* ── CONTENT AREA (Right Column) ─────────────────────────── */}
+        <main className="flex-1 min-w-0">
 
-      {/* Content Area */}
-      <div className="flex-1">
-
-        {/* Custom Tabs */}
-        <div className="flex space-x-2 placard p-2 mb-8 bg-gradient-to-r from-stone-100 to-stone-50">
-          <button 
-            onClick={() => setActiveTab('kanban')}
-            className={`flex-1 flex items-center justify-center gap-3 py-3 text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'kanban' ? 'bg-amber-900 text-amber-50 shadow-[2px_3px_0px_#451a03]' : 'text-amber-900/60 hover:text-amber-900 hover:bg-amber-100/50'}`}
-            style={{borderRadius: '8px 24px 8px 24px'}}
-          >
-            <KanbanSquare size={20} className={activeTab === 'kanban' ? 'text-amber-400' : ''} /> Kanban Board
-          </button>
-          <button 
-            onClick={() => setActiveTab('canvas')}
-            className={`flex-1 flex items-center justify-center gap-3 py-3 text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'canvas' ? 'bg-amber-900 text-amber-50 shadow-[2px_3px_0px_#451a03]' : 'text-amber-900/60 hover:text-amber-900 hover:bg-amber-100/50'}`}
-            style={{borderRadius: '8px 24px 8px 24px'}}
-          >
-            <LayoutTemplate size={20} className={activeTab === 'canvas' ? 'text-amber-400' : ''} /> Business Canvas
-          </button>
-          <button 
-            onClick={() => setActiveTab('collab')}
-            className={`flex-1 flex items-center justify-center gap-3 py-3 text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'collab' ? 'bg-[#0f766e] text-teal-50 shadow-[2px_3px_0px_#134e4a]' : 'text-[#0f766e]/60 hover:text-[#0f766e] hover:bg-teal-50'}`}
-            style={{borderRadius: '8px 24px 8px 24px'}}
-          >
-            <MessageSquare size={20} className={activeTab === 'collab' ? 'text-teal-400' : ''} /> Collab Hub
-          </button>
-          <button 
-            onClick={() => setActiveTab('documents')}
-            className={`flex-1 flex items-center justify-center gap-3 py-3 text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'documents' ? 'bg-purple-900 text-purple-50 shadow-[2px_3px_0px_#581c87]' : 'text-purple-900/60 hover:text-purple-900 hover:bg-purple-100/50'}`}
-            style={{borderRadius: '8px 24px 8px 24px'}}
-          >
-            <FileText size={20} className={activeTab === 'documents' ? 'text-purple-400' : ''} /> Intelligence Hub
-          </button>
-        </div>
-
-        {/* Kanban Board Container */}
-        <div className={`transition-opacity duration-200 ${activeTab === 'kanban' ? 'block opacity-100' : 'hidden opacity-0'}`}>
-          <div className="placard p-8 mb-8 bg-[#ebe9e4] relative overflow-hidden">
-            {/* Brushed metal noise specific to Kanban area */}
-            <div className="absolute inset-0 opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] mix-blend-overlay pointer-events-none"></div>
-            
-            <h3 className="text-3xl font-black text-amber-900 mb-6 flex items-center gap-3 font-serif-custom relative z-10 border-b-2 border-amber-300 pb-4">
-              Kanban Board
-            </h3>
-
-          {/* Quick Add Task */}
-          <form onSubmit={handleAddTask} className="flex gap-4 mb-8 relative z-10">
-            <input
-              type="text"
-              value={newTaskTitle}
-              onChange={e => setNewTaskTitle(e.target.value)}
-              placeholder="What needs to be done?"
-              className="flex-1 px-5 py-3 bg-white border-[3px] border-amber-200 shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-0 text-stone-800 font-medium"
-              style={{borderRadius: '8px 24px 8px 24px'}}
-            />
-            <button type="submit" className="gilded-btn">
-              <Plus size={20} className="icon-tactile" /> Expand
-            </button>
-          </form>
-
-          {/* Columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-            {Object.keys(columns).map((status) => (
-              <div key={status} className="bg-stone-50 border-2 border-stone-200 shadow-[4px_6px_0px_#d6d3d1] p-5 flex flex-col" style={{borderRadius: '12px 32px 12px 32px'}}>
-                <h4 className="font-black text-stone-800 mb-4 border-b-2 border-amber-300 pb-2 uppercase tracking-widest text-sm flex items-center justify-between">
-                  {status}
-                  <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px]">{columns[status].length}</span>
-                </h4>
-                <div className="space-y-4 flex-1">
-                  {columns[status].map(task => (
-                    <div key={task._id} className="bg-white p-4 border-[2px] border-amber-200 shadow-[2px_3px_0px_#fcd34d] relative group text-sm hover:-translate-y-1 hover:shadow-[2px_4px_0px_#fcd34d] transition-all" style={{borderRadius: '4px 12px 4px 12px'}}>
-                      <div className="flex justify-between items-start mb-3">
-                        <p className="text-amber-950 font-bold leading-relaxed flex-1 pr-2">{task.title}</p>
-                        <button
-                          onClick={() => handleDeleteTask(task._id)}
-                          className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition flex-shrink-0"
-                          title="Delete task"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-
-                      {/* Move Controls */}
-                      <select
-                        value={task.status}
-                        onChange={(e) => updateTaskStatus(task._id, e.target.value)}
-                        className="text-xs font-black uppercase tracking-widest bg-stone-50 border border-stone-200 p-1.5 w-full text-stone-600 focus:ring-0 focus:border-amber-400 transition"
-                      >
-                        <option value="To Do">To Do</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Done">Done</option>
-                      </select>
-                    </div>
-                  ))}
-                  {columns[status].length === 0 && (
-                    <p className="text-xs text-center text-stone-400 font-bold italic py-8 border-2 border-dashed border-stone-200" style={{borderRadius: '4px 12px 4px 12px'}}>Empty Sector</p>
-                  )}
-                </div>
-              </div>
+          {/* Tabs Navigation */}
+          <nav className="flex border-b border-[#27272A] mb-6 overflow-x-auto scrollbar-none">
+            {[
+              { tab: 'kanban',    label: 'Kanban Board',       icon: KanbanSquare },
+              { tab: 'canvas',    label: 'Business Canvas',    icon: LayoutTemplate },
+              { tab: 'collab',    label: 'Collab Hub',         icon: MessageSquare },
+              { tab: 'documents', label: 'Intelligence Hub',   icon: FileText },
+            ].map(({ tab, label, icon: Icon }) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 shrink-0 flex items-center justify-center gap-2 py-3 px-4 font-mono text-[10px] font-semibold uppercase tracking-widest border-b-2 transition-all duration-150 ${
+                  activeTab === tab 
+                    ? 'border-[#2563EB] text-[#60A5FA] bg-[#2563EB05]' 
+                    : 'border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/20'
+                }`}
+              >
+                <Icon size={12} /> <span>{label}</span>
+              </button>
             ))}
-          </div>
-        </div>
-      </div>
+          </nav>
 
-        {/* Business Canvas Container */}
-        <div className={`transition-opacity duration-200 ${activeTab === 'canvas' ? 'block opacity-100' : 'hidden opacity-0'}`}>
-          <BusinessCanvas teamId={teamId} />
-        </div>
-
-        {/* Collaboration Container */}
-        <div className={`transition-opacity duration-200 ${activeTab === 'collab' ? 'block opacity-100' : 'hidden opacity-0'}`}>
-          <CollaborationHub 
-            teamId={teamId} 
-            messages={team.messages} 
-            documents={team.documents} 
-            onRefresh={fetchTeam}
-            isCEO={isCEO}
-            onDeleteDocument={handleDeleteDocument}
-          />
-        </div>
-
-        {/* Unified Strategy & Intelligence Hub */}
-        <div className={`transition-opacity duration-300 ${activeTab === 'documents' ? 'block opacity-100' : 'hidden opacity-0'}`}>
-          <div className="placard p-8 mb-8 bg-gradient-to-br from-stone-200 to-stone-300 relative overflow-hidden shadow-2xl">
-            {/* Premium Mesh Gradient Overlay */}
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_-20%,#8b5cf6,transparent),radial-gradient(circle_at_0%_100%,#0ea5e9,transparent)] pointer-events-none"></div>
-            <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/dust.png')] pointer-events-none"></div>
-            
-            <h3 className="text-4xl font-black text-purple-950 mb-8 flex items-center gap-4 font-serif-custom relative z-10">
-              <div className="p-3 bg-purple-600/10 rounded-2xl border border-purple-600/20 shadow-inner">
-                <FileText size={32} className="text-purple-700 drop-shadow-sm" />
+          {/* ── Kanban Board Tab ─────────────────────────────── */}
+          <div className={activeTab === 'kanban' ? 'block' : 'hidden'}>
+            <section className="bg-[#18181B] border border-[#27272A] rounded-sm p-6 mb-6">
+              <div className="flex items-center gap-2 mb-5">
+                <div className="w-0.5 h-4 bg-[#2563EB]" />
+                <span className="text-[10px] font-mono font-semibold uppercase tracking-widest text-zinc-500">
+                  Kanban Board
+                </span>
               </div>
-              Strategy & Intelligence Hub
-              <span className="ml-auto text-xs font-black uppercase tracking-[0.2em] text-purple-900/40 bg-purple-900/5 px-4 py-2 rounded-full border border-purple-900/10">
-                Unified Gallery
-              </span>
-            </h3>
 
-            {unifiedVault.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                {unifiedVault.map((item) => (
-                  <div 
-                    key={item._id} 
-                    className="group relative flex flex-col bg-white/60 backdrop-blur-xl border border-white/40 p-8 transition-all duration-500 hover:bg-white/80 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 overflow-hidden h-full" 
-                    style={{borderRadius: '24px 64px 24px 64px'}}
-                  >
-                    {/* Common Card Header logic */}
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h4 className="font-black text-purple-950 text-xl tracking-tight leading-tight group-hover:text-purple-600 transition-colors uppercase break-words">
-                            {item.vaultType === 'document' ? item.title : (item.ideaData?.solution || 'AI Validation')}
-                          </h4>
-                          <p className="text-xs text-stone-500 font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
-                             <span className={`w-2 h-2 rounded-full ${item.vaultType === 'document' ? 'bg-indigo-400' : 'bg-teal-500 animate-pulse'}`}></span>
-                             {new Date(item.date).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className={`p-3 rounded-2xl transition-all duration-300 ${item.vaultType === 'document' ? 'bg-purple-900/5 group-hover:bg-purple-600 group-hover:text-white' : 'bg-purple-900/5 group-hover:bg-teal-600 group-hover:text-white'}`}>
-                          {item.vaultType === 'document' ? <LinkIcon size={24} /> : <Activity size={24} className="text-teal-600 group-hover:text-white" />}
-                        </div>
-                      </div>
+              {/* Sleek Command Input Bar */}
+              <form 
+                onSubmit={handleAddTask} 
+                className="flex bg-[#09090B] border border-[#27272A] rounded-sm p-1.5 gap-2 mb-8 focus-within:border-[#2563EB] transition-colors duration-150"
+              >
+                <div className="flex items-center pl-3 text-zinc-600">
+                  <Plus size={16} />
+                </div>
+                <input
+                  type="text"
+                  value={newTaskTitle}
+                  onChange={e => setNewTaskTitle(e.target.value)}
+                  placeholder="What needs to be done? Enter command..."
+                  className="flex-1 bg-transparent text-zinc-100 text-sm placeholder-zinc-700 focus:outline-none font-mono"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-[9px] font-semibold uppercase tracking-widest rounded-sm transition-colors duration-150"
+                >
+                  Execute Add
+                </button>
+              </form>
 
-                      {/* Tagging */}
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        <span className={`text-[10px] font-black px-3 py-1.5 border rounded-full uppercase tracking-widest shadow-sm ${item.vaultType === 'document' ? 'text-purple-700 bg-purple-50 border-purple-100' : 'text-teal-700 bg-teal-50 border-teal-100'}`}>
-                          {item.vaultType === 'document' ? (item.category || 'Uploaded File') : 'AI Analysis'}
+              {/* Kanban Column Layout */}
+              <div className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-4 pb-4 md:pb-0">
+                {Object.keys(columns).map(status => (
+                  <div key={status} className="w-[85vw] md:w-auto shrink-0 snap-center bg-[#121214] border border-[#27272A] rounded-sm flex flex-col min-h-[500px]">
+                    
+                    {/* Column Header */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-[#27272A]">
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="w-1.5 h-1.5 rounded-full" 
+                          style={{ backgroundColor: COLUMN_ACCENT[status] }}
+                        />
+                        <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-zinc-200">
+                          {status}
                         </span>
                       </div>
-
-                      {/* Content Body */}
-                      {item.vaultType === 'document' ? (
-                        <p className="text-sm text-stone-500 mb-8 font-medium italic border-l-2 border-purple-200 pl-4">
-                          {getUploaderLabel(item)}
-                        </p>
-                      ) : (
-                        <div className="grid grid-cols-2 gap-4 mb-8 items-stretch">
-                          <div className="bg-purple-900/5 p-4 rounded-3xl border border-purple-900/5 flex flex-col">
-                            <span className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Market Size</span>
-                            <span className="font-black text-teal-800 text-sm break-words leading-tight">{item.aiResponse?.marketSize || 'N/A'}</span>
-                          </div>
-                          <div className="bg-purple-900/5 p-4 rounded-3xl border border-purple-900/5 flex flex-col justify-center">
-                            <span className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Comp. Count</span>
-                            <span className="font-black text-purple-800 text-lg">{item.aiResponse?.competitors?.length || 0}</span>
-                          </div>
-                        </div>
-                      )}
+                      <span className="font-mono text-[9px] font-bold px-2 py-0.5 border border-[#27272A] bg-[#09090B] text-zinc-400 rounded-sm">
+                        {columns[status].length}
+                      </span>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="mt-auto pt-4">
-                      {item.vaultType === 'document' ? (
-                        <div className="flex flex-wrap items-center gap-4">
-                          {getDocumentPath(item.url) ? (
-                            <Link
-                              to={getDocumentPath(item.url)}
-                              className="flex-1 inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-black uppercase tracking-[0.1em] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-                              style={{borderRadius: '12px 32px 12px 32px'}}
-                            >
-                              <FileText size={18} /> Open Document
-                            </Link>
-                          ) : (
-                            <a
-                              href={item.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-1 inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-black uppercase tracking-[0.1em] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-                              style={{borderRadius: '12px 32px 12px 32px'}}
-                            >
-                              <ExternalLink size={18} /> Open Document
-                            </a>
-                          )}
-                          {isCEO && (
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteDocument(item._id)}
-                              className="p-4 bg-red-50 text-red-500 border border-red-100 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm"
-                              style={{borderRadius: '12px 24px 12px 24px'}}
-                            >
-                              <Trash2 size={20} />
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <Link
-                          to={`/ai/report/${item._id}`}
-                          className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-stone-800 to-black text-white font-black uppercase tracking-[0.1em] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-                          style={{borderRadius: '12px 32px 12px 32px'}}
+                    {/* Tasks List */}
+                    <div className="flex flex-col gap-2 p-2 flex-1">
+                      {columns[status].map(task => (
+                        <div 
+                          key={task._id} 
+                          className="bg-[#18181B] border border-[#27272A] rounded-sm p-4 group hover:border-zinc-500 transition-colors duration-150"
                         >
-                          <ExternalLink size={18} /> Full Market Report
-                        </Link>
+                          <div className="flex justify-between items-start mb-4">
+                            <p className="text-xs text-zinc-200 leading-relaxed font-sans flex-1 pr-2">
+                              {task.title}
+                            </p>
+                            <button
+                              onClick={() => handleDeleteTask(task._id)}
+                              className="opacity-0 group-hover:opacity-100 p-1 text-zinc-600 hover:text-red-400 transition-colors flex-shrink-0"
+                              title="Delete task"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                          
+                          <div className="relative">
+                            <select
+                              value={task.status}
+                              onChange={e => updateTaskStatus(task._id, e.target.value)}
+                              className="w-full text-[9px] font-mono font-semibold uppercase tracking-widest bg-[#09090B] border border-[#27272A] p-2 text-zinc-500 hover:text-zinc-300 focus:outline-none focus:border-[#2563EB] transition-colors rounded-sm cursor-pointer"
+                            >
+                              <option value="To Do">To Do</option>
+                              <option value="In Progress">In Progress</option>
+                              <option value="Done">Done</option>
+                            </select>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Empty Column State */}
+                      {columns[status].length === 0 && (
+                        <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-[#27272A] rounded-sm m-2 py-10 px-4">
+                          <span className="text-[14px] text-zinc-800 mb-2">∅</span>
+                          <p className="text-[9px] text-zinc-600 font-mono uppercase tracking-widest text-center">
+                            No Active Tasks
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="text-center py-20 bg-white/30 backdrop-blur-sm border-2 border-dashed border-purple-300/50 relative z-10 flex flex-col items-center gap-4" style={{borderRadius: '32px'}}>
-                <div className="p-4 bg-purple-100 rounded-full text-purple-600">
-                  <FileText size={48} className="opacity-20" />
-                </div>
-                <p className="text-xl font-bold text-purple-950">Vault is empty</p>
-                <p className="text-sm text-purple-900/60 max-w-sm px-6">Combine your uploaded pitch decks with AI validated market reports here. Start by analyzing an idea or uploading a document.</p>
-                <Link to="/ai-validator" className="text-indigo-600 font-black uppercase tracking-widest text-xs hover:underline mt-4">Execute AI Validation →</Link>
-              </div>
-            )}
+            </section>
           </div>
-        </div>
+
+          {/* ── Business Canvas Tab ─────────────────────────────── */}
+          <div className={activeTab === 'canvas' ? 'block' : 'hidden'}>
+            <BusinessCanvas teamId={teamId} />
+          </div>
+
+          {/* ── Collab Hub Tab ──────────────────────────────────── */}
+          <div className={activeTab === 'collab' ? 'block' : 'hidden'}>
+            <CollaborationHub 
+              teamId={teamId} 
+              messages={team.messages} 
+              documents={team.documents} 
+              onRefresh={fetchTeam}
+              isCEO={isCEO}
+              onDeleteDocument={handleDeleteDocument}
+            />
+          </div>
+
+          {/* ── Intelligence Hub Tab ──────────────────────────── */}
+          <div className={activeTab === 'documents' ? 'block' : 'hidden'}>
+            <section className="bg-[#18181B] border border-[#27272A] rounded-sm p-6 mb-6">
+              <div className="flex items-center gap-2 mb-5">
+                <div className="w-0.5 h-4 bg-[#7C3AED]" />
+                <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">
+                  Strategy & Intelligence Hub
+                </span>
+              </div>
+
+              {unifiedVault.length > 0 ? (
+                <div className="flex flex-col gap-2 bg-transparent">
+                  {unifiedVault.map(item => (
+                    <div 
+                      key={item._id} 
+                      className="bg-[#18181B] border border-[#27272A] rounded-sm flex items-center hover:border-zinc-500 transition-colors group"
+                    >
+                      {/* Left indicator accent color */}
+                      <div
+                        className="w-1 self-stretch shrink-0"
+                        style={{ backgroundColor: item.vaultType === 'document' ? '#7C3AED' : '#0891B2' }}
+                      />
+                      
+                      {/* Date Block */}
+                      <div className="w-24 shrink-0 px-4 py-4 border-r border-[#27272A] flex items-center justify-center">
+                        <span className="text-[9px] font-mono text-zinc-500">
+                          {new Date(item.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      
+                      {/* Info Block */}
+                      <div className="flex-1 px-5 py-4 min-w-0">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span
+                            className="text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 border rounded-sm shrink-0"
+                            style={{
+                              backgroundColor: item.vaultType === 'document' ? '#7C3AED15' : '#0891B215',
+                              color:           item.vaultType === 'document' ? '#C084FC'   : '#22D3EE',
+                              borderColor:     item.vaultType === 'document' ? '#7C3AED30' : '#0891B230',
+                            }}
+                          >
+                            {item.vaultType === 'document' ? (item.category || 'Document') : 'AI Analysis'}
+                          </span>
+                        </div>
+                        <h4 className="text-xs font-semibold text-zinc-100 truncate" style={OUTFIT}>
+                          {item.vaultType === 'document' ? item.title : (item.ideaData?.solution || 'AI Validation')}
+                        </h4>
+                        {item.vaultType === 'document' ? (
+                          <p className="text-[9px] font-mono text-zinc-600 mt-1">{getUploaderLabel(item)}</p>
+                        ) : (
+                          <p className="text-[9px] font-mono text-zinc-600 mt-1">
+                            Market: {item.aiResponse?.marketSize || 'N/A'} · Competitors: {item.aiResponse?.competitors?.length || 0}
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* Actions Trigger Block */}
+                      <div className="shrink-0 flex items-center border-l border-[#27272A] self-stretch">
+                        {item.vaultType === 'document' ? (
+                          <>
+                            {getDocumentPath(item.url) ? (
+                              <Link
+                                to={getDocumentPath(item.url)}
+                                className="flex items-center justify-center gap-1.5 px-4 h-full font-mono text-[9px] font-semibold uppercase tracking-widest text-zinc-500 hover:text-zinc-100 hover:bg-[#27272A] border-r border-[#27272A] transition-colors"
+                              >
+                                <FileText size={12} /> Open
+                              </Link>
+                            ) : (
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-1.5 px-4 h-full font-mono text-[9px] font-semibold uppercase tracking-widest text-zinc-500 hover:text-zinc-100 hover:bg-[#27272A] border-r border-[#27272A] transition-colors"
+                              >
+                                <ExternalLink size={12} /> Open
+                              </a>
+                            )}
+                            {isCEO && (
+                              <button
+                                onClick={() => handleDeleteDocument(item._id)}
+                                className="px-4 h-full text-zinc-600 hover:text-red-400 hover:bg-[#27272A] transition-colors"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            )}
+                          </>
+                        ) : (
+                          <Link
+                            to={`/ai/report/${item._id}`}
+                            className="flex items-center justify-center gap-1.5 px-4 h-full font-mono text-[9px] font-semibold uppercase tracking-widest text-[#22D3EE] hover:bg-[#0891B215] transition-colors"
+                          >
+                            <Activity size={12} /> Full Report
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-16 text-center border border-dashed border-[#27272A] rounded-sm bg-[#18181B]">
+                  <FileText size={28} className="text-zinc-700 mx-auto mb-3" />
+                  <p className="text-zinc-500 font-mono text-[9px] uppercase tracking-widest font-semibold mb-2">
+                    Vault is empty
+                  </p>
+                  <Link 
+                    to="/ai-validator" 
+                    className="text-[#2563EB] font-mono text-[9px] font-semibold uppercase tracking-widest hover:text-blue-400 transition-colors"
+                  >
+                    Execute AI Validation →
+                  </Link>
+                </div>
+              )}
+            </section>
+          </div>
+        </main>
       </div>
 
-      {/* Invite Modal */}
+      {/* ── Invite Modal ─────────────────────────────────────── */}
       {showInviteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Invite Member</h3>
-            {inviteError && <div className="bg-red-100 text-red-700 p-2 rounded text-sm mb-4">{inviteError}</div>}
-            <form onSubmit={handleInvite} className="space-y-4">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+          <div className="bg-[#18181B] border border-[#27272A] rounded-sm w-full max-w-sm">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#27272A]">
+              <span className="text-xs font-bold text-zinc-100" style={OUTFIT}>Invite Member</span>
+              <button onClick={() => setShowInviteModal(false)} className="text-zinc-600 hover:text-zinc-300 transition-colors"><X size={16} /></button>
+            </div>
+            {inviteError && (
+              <div className="mx-5 mt-4 px-3 py-2 bg-red-950/20 border border-red-500/30 text-red-400 text-xs font-mono rounded-sm">
+                ERROR: {inviteError}
+              </div>
+            )}
+            <form onSubmit={handleInvite} className="p-5 flex flex-col gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">User Email</label>
-                <input 
-                  type="email" 
-                  value={inviteData.email} 
+                <label className="block text-[9px] font-mono font-semibold uppercase tracking-widest text-zinc-500 mb-1.5">User Email</label>
+                <input
+                  type="email"
+                  value={inviteData.email}
                   onChange={e => setInviteData({...inviteData, email: e.target.value})}
                   required
-                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] text-zinc-100 text-sm focus:outline-none focus:border-[#2563EB] rounded-sm transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <select 
+                <label className="block text-[9px] font-mono font-semibold uppercase tracking-widest text-zinc-500 mb-1.5">Role</label>
+                <select
                   value={inviteData.role}
                   onChange={e => setInviteData({...inviteData, role: e.target.value})}
-                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] text-zinc-300 text-sm focus:outline-none focus:border-[#2563EB] rounded-sm transition-colors cursor-pointer"
                 >
                   <option value="CTO">CTO</option>
                   <option value="CMO">CMO</option>
@@ -707,17 +757,17 @@ const TeamDashboard = () => {
                   <option value="Member">Member</option>
                 </select>
               </div>
-              <div className="flex gap-2 justify-end mt-6">
+              <div className="flex gap-2 pt-2">
                 <button 
                   type="button" 
-                  onClick={() => setShowInviteModal(false)}
-                  className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded"
+                  onClick={() => setShowInviteModal(false)} 
+                  className="flex-1 px-4 py-2.5 font-mono text-[9px] font-semibold uppercase tracking-widest border border-[#27272A] text-zinc-500 hover:text-zinc-100 hover:border-zinc-500 rounded-sm transition-colors"
                 >
                   Cancel
                 </button>
                 <button 
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded"
+                  type="submit" 
+                  className="flex-1 px-4 py-2.5 font-mono text-[9px] font-semibold uppercase tracking-widest bg-[#2563EB] text-white hover:bg-blue-700 rounded-sm transition-colors"
                 >
                   Invite
                 </button>
@@ -727,56 +777,45 @@ const TeamDashboard = () => {
         </div>
       )}
 
-      {/* Edit Project Details Modal (CEO Only) */}
+      {/* ── Edit Project Modal ───────────────────────────────── */}
       {showEditProjectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">Edit Project Details</h3>
-              <button onClick={() => setShowEditProjectModal(false)} className="text-gray-400 hover:text-gray-600">
-                <X size={20} />
-              </button>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+          <div className="bg-[#18181B] border border-[#27272A] rounded-sm w-full max-w-lg flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#27272A]">
+              <span className="text-xs font-bold text-zinc-100" style={OUTFIT}>Edit Project Details</span>
+              <button onClick={() => setShowEditProjectModal(false)} className="text-zinc-600 hover:text-zinc-300 transition-colors"><X size={16} /></button>
             </div>
-            
-            <div className="p-6 overflow-y-auto">
-              <form id="edit-project-form" onSubmit={handleEditProject} className="space-y-4">
+            <div className="p-5 overflow-y-auto flex-1">
+              <form id="edit-project-form" onSubmit={handleEditProject} className="flex flex-col gap-4">
+                {[{ label: 'Project Name', key: 'name', type: 'text', required: true },].map(({ label, key, type, required }) => (
+                  <div key={key}>
+                    <label className="block text-[9px] font-mono font-semibold uppercase tracking-widest text-zinc-500 mb-1.5">{label}</label>
+                    <input
+                      type={type}
+                      value={editProjectData[key]}
+                      onChange={e => setEditProjectData({...editProjectData, [key]: e.target.value})}
+                      required={required}
+                      className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] text-zinc-100 text-sm focus:outline-none focus:border-[#2563EB] rounded-sm transition-colors"
+                    />
+                  </div>
+                ))}
+                {[{ label: 'Problem Statement', key: 'problemStatement' }, { label: 'Solution', key: 'solution' }].map(({ label, key }) => (
+                  <div key={key}>
+                    <label className="block text-[9px] font-mono font-semibold uppercase tracking-widest text-zinc-500 mb-1.5">{label}</label>
+                    <textarea
+                      value={editProjectData[key]}
+                      onChange={e => setEditProjectData({...editProjectData, [key]: e.target.value})}
+                      rows="3"
+                      className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] text-zinc-100 text-sm focus:outline-none focus:border-[#2563EB] rounded-sm transition-colors resize-none"
+                    />
+                  </div>
+                ))}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Project Name</label>
-                  <input 
-                    type="text" 
-                    value={editProjectData.name} 
-                    onChange={e => setEditProjectData({...editProjectData, name: e.target.value})}
-                    required
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Problem Statement</label>
-                  <textarea 
-                    value={editProjectData.problemStatement} 
-                    onChange={e => setEditProjectData({...editProjectData, problemStatement: e.target.value})}
-                    rows="3"
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  ></textarea>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Solution</label>
-                  <textarea 
-                    value={editProjectData.solution} 
-                    onChange={e => setEditProjectData({...editProjectData, solution: e.target.value})}
-                    rows="3"
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  ></textarea>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Stage</label>
-                  <select 
+                  <label className="block text-[9px] font-mono font-semibold uppercase tracking-widest text-zinc-500 mb-1.5">Stage</label>
+                  <select
                     value={editProjectData.stage}
                     onChange={e => setEditProjectData({...editProjectData, stage: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] text-zinc-300 text-sm focus:outline-none focus:border-[#2563EB] rounded-sm transition-colors cursor-pointer"
                   >
                     <option value="Idea">Idea</option>
                     <option value="Testing">Testing</option>
@@ -786,19 +825,18 @@ const TeamDashboard = () => {
                 </div>
               </form>
             </div>
-
-            <div className="p-6 border-t border-gray-100 flex gap-3 justify-end bg-gray-50 rounded-b-xl">
+            <div className="flex gap-2 px-5 py-4 border-t border-[#27272A]">
               <button 
                 type="button" 
-                onClick={() => setShowEditProjectModal(false)}
-                className="px-5 py-2.5 text-gray-700 font-medium bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition"
+                onClick={() => setShowEditProjectModal(false)} 
+                className="flex-1 px-4 py-2.5 font-mono text-[9px] font-semibold uppercase tracking-widest border border-[#27272A] text-zinc-500 hover:text-zinc-100 hover:border-zinc-500 rounded-sm transition-colors"
               >
                 Cancel
               </button>
               <button 
-                type="submit"
-                form="edit-project-form"
-                className="px-5 py-2.5 bg-indigo-600 font-medium text-white hover:bg-indigo-700 rounded-lg shadow-sm transition"
+                type="submit" 
+                form="edit-project-form" 
+                className="flex-1 px-4 py-2.5 font-mono text-[9px] font-semibold uppercase tracking-widest bg-[#2563EB] text-white hover:bg-blue-700 rounded-sm transition-colors"
               >
                 Save Changes
               </button>
@@ -806,8 +844,6 @@ const TeamDashboard = () => {
           </div>
         </div>
       )}
-
-      </div>
     </div>
   );
 };

@@ -4,6 +4,75 @@ import FundingCard from './FundingCard';
 import { Search, Filter, Rocket } from 'lucide-react';
 import { API_BASE_URL } from '@/config';
 
+const MONO = { fontFamily: "'Geist Mono', 'SF Mono', monospace" };
+const OUTFIT = { fontFamily: "'Outfit', 'Inter', sans-serif" };
+
+const DUMMY_FUNDING = [
+  {
+    _id: 'dummy-1',
+    title: 'Bangladesh Innovation Grant 2026',
+    provider: 'ICT Division, Govt. of Bangladesh',
+    amount: 'BDT 5,00,000',
+    deadline: '2026-08-15T00:00:00Z',
+    category: 'Grant',
+    eligibility: 'Registered student-led startups from any Bangladeshi university with a working prototype.',
+    applyLink: '#',
+    pastWinners: 'ShopUp, Maya, Shajgoj received support in previous cycles.',
+  },
+  {
+    _id: 'dummy-2',
+    title: 'a2i StartupBangladesh Pitch Competition',
+    provider: 'Aspire to Innovate (a2i)',
+    amount: 'USD 10,000',
+    deadline: '2026-07-30T00:00:00Z',
+    category: 'Competition',
+    eligibility: 'Open to all students under 30 with a tech-enabled business idea.',
+    applyLink: '#',
+  },
+  {
+    _id: 'dummy-3',
+    title: 'Grameenphone Accelerator Cohort 8',
+    provider: 'GP Accelerator',
+    amount: 'BDT 25,00,000 + Mentorship',
+    deadline: '2026-09-01T00:00:00Z',
+    category: 'Accelerator',
+    eligibility: 'Early-stage startups with at least one student co-founder and a viable MVP.',
+    applyLink: '#',
+    pastWinners: 'Chaldal, Sheba.xyz, and 10 Minute School are alumni.',
+  },
+  {
+    _id: 'dummy-4',
+    title: 'BRAC University Seed Fund',
+    provider: 'BRAC University Entrepreneurship Development Centre',
+    amount: 'BDT 3,00,000',
+    deadline: '2026-07-10T00:00:00Z',
+    category: 'Grant',
+    eligibility: 'BRAC University students only. All departments eligible.',
+    applyLink: '#',
+  },
+  {
+    _id: 'dummy-5',
+    title: 'NSU Techstars Campus Competition',
+    provider: 'North South University & Techstars',
+    amount: 'USD 5,000 + Global Network Access',
+    deadline: '2026-08-20T00:00:00Z',
+    category: 'Competition',
+    eligibility: 'Any NSU enrolled student team with a minimum viable product.',
+    applyLink: '#',
+  },
+  {
+    _id: 'dummy-6',
+    title: 'YY Ventures Early-Stage Accelerator',
+    provider: 'YY Ventures',
+    amount: 'USD 20,000 equity-free',
+    deadline: '2026-10-01T00:00:00Z',
+    category: 'Accelerator',
+    eligibility: 'South Asian student founders, remote-friendly cohort.',
+    applyLink: '#',
+    pastWinners: 'Multiple cohorts with exits and Series A raises.',
+  },
+];
+
 const FundingDirectory = () => {
   const { token, user, setUser } = useContext(AuthContext);
   const [funding, setFunding] = useState([]);
@@ -64,93 +133,89 @@ const FundingDirectory = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [search, category]);
 
+  const displayData = funding.length > 0 ? funding : DUMMY_FUNDING;
+
   return (
-    <div className="min-h-screen bg-slate-50 w-full">
-      <div className="max-w-[1440px] mx-auto w-full px-4 md:px-8 lg:px-12 py-8 bg-paper">
-      <div className="mb-12 relative">
-        <div className="text-center md:text-left mb-10 overflow-hidden relative p-12 jewel-teal shadow-xl" style={{ borderRadius: '16px 48px 16px 48px' }}>
-          <div className="absolute inset-0 opacity-[0.05] bg-black"></div>
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="md:w-2/3">
-              <h1 className="text-5xl font-black mb-4 font-serif-custom text-teal-50 drop-shadow-md tracking-tight">The Funding Matrix</h1>
-              <p className="text-teal-100 text-lg font-sans-custom font-medium max-w-2xl leading-relaxed">
-                Connect with the leading grants, competitions, and startup accelerators across the Bangladesh ecosystem. Your seed capital starts here.
+    <div className="min-h-screen bg-[#09090B]">
+      <div className="max-w-[1440px] mx-auto w-full px-4 md:px-8 lg:px-12 py-10">
+
+        {/* ── Page Header ─────────────────────────────────────────── */}
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-0.5 h-4 bg-[#2563EB]" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500" style={MONO}>
+              Funding Matrix
+            </span>
+          </div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-zinc-100" style={OUTFIT}>The Funding Matrix</h1>
+              <p className="text-zinc-400 text-sm mt-2 max-w-xl" style={{ fontFamily: "'Inter', sans-serif" }}>
+                Connect with the leading grants, competitions, and startup accelerators across the Bangladesh ecosystem.
               </p>
             </div>
-            <div className="flex-shrink-0 bg-white/10 p-6 backdrop-blur-md border border-white/20 rounded-3xl">
-               <Rocket size={80} className="text-teal-100 opacity-60 transform rotate-12" />
+            <div className="flex items-center gap-2 text-xs text-zinc-500 shrink-0" style={MONO}>
+              <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
+              Tracking {displayData.length} active opportunities
             </div>
           </div>
         </div>
 
-        {/* Stats Hub */}
-        <div className="flex items-center gap-2 mb-4 px-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></div>
-          <span className="tracking-widest text-[10px] uppercase font-bold text-amber-900/40">
-            Currently Tracking {funding.length} Active Opportunities for Bangladesh Startups
-          </span>
+        {/* ── Filters ─────────────────────────────────────────────── */}
+        <div className="bg-[#18181B] border border-[#27272A] rounded-sm p-4 mb-8 flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative flex-1 w-full">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <input
+              type="text"
+              placeholder="Search by title or provider..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-[#09090B] border border-[#27272A] rounded-sm text-zinc-100 text-sm placeholder-zinc-600 focus:outline-none focus:border-[#2563EB] transition-colors"
+              style={MONO}
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 mr-1 flex items-center gap-1" style={MONO}>
+              <Filter size={11} /> Category:
+            </span>
+            {['All', 'Grant', 'Competition', 'Accelerator'].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest rounded-sm border transition-colors"
+                style={{
+                  ...MONO,
+                  backgroundColor: category === cat ? '#2563EB' : '#09090B',
+                  color: category === cat ? 'white' : '#71717A',
+                  borderColor: category === cat ? '#2563EB' : '#27272A',
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Filters and Search Hub */}
-        <div className="placard p-8 border-t-4 border-amber-400 bg-stone-50/50 flex flex-col md:flex-row gap-6 items-center shadow-xl mb-12">
-           <div className="relative flex-1 w-full">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">
-                <Search size={20} />
-              </span>
-              <input 
-                type="text" 
-                placeholder="Search resources by title or provider..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-white border-2 border-stone-200 focus:border-amber-400 focus:ring-0 text-stone-800 font-bold tracking-tight rounded-2xl shadow-inner transition-all hover:border-stone-300"
-              />
-           </div>
-           
-           <div className="flex items-center gap-3 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
-              <div className="flex items-center gap-2 mr-4 text-stone-500 font-black uppercase tracking-widest text-[10px]">
-                 <Filter size={14} /> Categories:
-              </div>
-              {['All', 'Grant', 'Competition', 'Accelerator'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all border-2 ${category === cat ? 'bg-amber-900 border-amber-900 text-amber-50 shadow-md transform -translate-y-0.5' : 'bg-white border-stone-200 text-stone-500 hover:border-amber-400 hover:text-amber-900'}`}
-                  style={{ borderRadius: '8px 20px 8px 20px' }}
-                >
-                  {cat}
-                </button>
-              ))}
-           </div>
-        </div>
-
-        {/* Grid Area */}
+        {/* ── Grid ────────────────────────────────────────────────── */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-64 bg-stone-100 rounded-3xl border-2 border-dashed border-stone-200"></div>
+              <div key={i} className="h-64 bg-[#18181B] border border-[#27272A] rounded-sm animate-pulse" />
             ))}
           </div>
         ) : (
-          <>
-            {funding.length === 0 ? (
-              <div className="text-center py-20 placard bg-stone-50 border-dashed border-2 border-stone-200" style={{ borderRadius: '16px 48px 16px 48px' }}>
-                <p className="text-stone-400 font-black uppercase tracking-widest text-sm">No funding opportunities match your matrix search.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {funding.map((item) => (
-                  <FundingCard 
-                    key={item._id} 
-                    item={item} 
-                    isSaved={watchlist.includes(item._id)}
-                    onToggleSave={toggleSave}
-                  />
-                ))}
-              </div>
-            )}
-          </>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {displayData.map((item) => (
+              <FundingCard
+                key={item._id}
+                item={item}
+                isSaved={watchlist.includes(item._id)}
+                onToggleSave={toggleSave}
+              />
+            ))}
+          </div>
         )}
-      </div>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config';
+import { auth } from '../firebaseConfig';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 export const AuthContext = createContext();
 
@@ -35,24 +37,27 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const initAuth = async () => {
-      if (token) {
-        localStorage.setItem('token', token);
-        setIsAuthenticated(true);
+    // Listen for Firebase auth state changes
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+      if (fbUser) {
+        try {
+          const idToken = await fbUser.getIdToken();
+          setToken(idToken);
+          localStorage.setItem('token', idToken);
+          setIsAuthenticated(true);
 
-        // Only fetch if this is a new token session
-        if (lastFetchedToken.current !== token) {
-          try {
+          // Only fetch if this is a new token session
+          if (lastFetchedToken.current !== idToken) {
             // Fetch User details
             const userRes = await fetch(`${API_BASE_URL}/auth/me`, {
-              headers: { 'Authorization': `Bearer ${token}` }
+              headers: { 'Authorization': `Bearer ${idToken}` }
             });
             const userData = await userRes.json();
-            if (!userData.message) setUser(userData);
+            if (userData && !userData.message) setUser(userData);
 
             // Fetch user's team
             const teamRes = await fetch(`${API_BASE_URL}/teams/user/me`, {
-              headers: { 'Authorization': `Bearer ${token}` }
+              headers: { 'Authorization': `Bearer ${idToken}` }
             });
             const teamData = await teamRes.json();
             if (teamData && teamData.length > 0) {
@@ -64,31 +69,77 @@ export const AuthProvider = ({ children }) => {
             // Fetch unread notification count
             await refreshUnreadCount();
 
-            lastFetchedToken.current = token;
-          } catch (err) {
-            console.error('Auth initialization error:', err);
+            lastFetchedToken.current = idToken;
           }
+        } catch (err) {
+          console.error('Error synchronizing Firebase user with backend:', err);
         }
       } else {
-        localStorage.removeItem('token');
-        setIsAuthenticated(false);
-        setUserTeamId(null);
-        setUser(null);
-        setUnreadCount(0);
-        lastFetchedToken.current = null;
+        // No Firebase user, but check if there's a local mock/test token (fallback for dev testing)
+        const localToken = localStorage.getItem('token');
+        if (localToken && (localToken.startsWith('mock_test_token_') || localToken.length < 200)) {
+          setToken(localToken);
+          setIsAuthenticated(true);
+
+          if (lastFetchedToken.current !== localToken) {
+            try {
+              const userRes = await fetch(`${API_BASE_URL}/auth/me`, {
+                headers: { 'Authorization': `Bearer ${localToken}` }
+              });
+              const userData = await userRes.json();
+              if (userData && !userData.message) setUser(userData);
+
+              const teamRes = await fetch(`${API_BASE_URL}/teams/user/me`, {
+                headers: { 'Authorization': `Bearer ${localToken}` }
+              });
+              const teamData = await teamRes.json();
+              if (teamData && teamData.length > 0) {
+                setUserTeamId(teamData[0]._id);
+              } else {
+                setUserTeamId(null);
+              }
+
+              await refreshUnreadCount();
+              lastFetchedToken.current = localToken;
+            } catch (err) {
+              console.error('Error fetching mock user details:', err);
+            }
+          }
+        } else {
+          setToken(null);
+          localStorage.removeItem('token');
+          setIsAuthenticated(false);
+          setUserTeamId(null);
+          setUser(null);
+          setUnreadCount(0);
+          lastFetchedToken.current = null;
+        }
       }
       setLoading(false);
-    };
+    });
 
-    initAuth();
+    return () => unsubscribe();
   }, [token]);
 
   const login = (newToken) => {
     setToken(newToken);
+    localStorage.setItem('token', newToken);
+    setIsAuthenticated(true);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
     setToken(null);
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setUserTeamId(null);
+    setUser(null);
+    setUnreadCount(0);
+    lastFetchedToken.current = null;
   };
 
   return (

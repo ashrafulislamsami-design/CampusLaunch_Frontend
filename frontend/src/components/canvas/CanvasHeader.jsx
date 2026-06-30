@@ -18,8 +18,8 @@ import PresenceIndicator from './PresenceIndicator';
 const CanvasHeader = ({
   teamName,
   teamId,
-  sections,
-  activeUsers,
+  sections = {},
+  activeUsers = [],
   connected,
   saving,
   lastSavedAt,
@@ -32,7 +32,8 @@ const CanvasHeader = ({
   exporting,
   fullscreen,
   onToggleFullscreen,
-  readOnly
+  readOnly,
+  sidebarOpen
 }) => {
   const [exportOpen, setExportOpen] = useState(false);
   const exportRef = useRef(null);
@@ -51,137 +52,170 @@ const CanvasHeader = ({
     ? `Saved ${new Date(lastSavedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
     : 'Not saved';
 
+  const keys = Object.keys(sections || {});
+  const total = keys.length || 9;
+  const filled = keys.filter((k) => (sections[k]?.cards || []).length > 0).length;
+  const pct = Math.round((filled / total) * 100);
+
   return (
-    <header className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b-[3px] border-amber-200/60 shadow-sm">
-      <div className="max-w-[1880px] mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
+    <header className={`sticky top-0 z-20 bg-[#09090B] border-b border-[#27272A] pb-4 mb-6 transition-all duration-150 ${sidebarOpen ? 'lg:pr-[380px]' : ''}`}>
+      <div className="max-w-[1880px] mx-auto px-4 pt-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        {/* Left: Title + Startup badge */}
         <div className="flex items-center gap-3 min-w-0">
           {teamId && !readOnly && (
             <Link
               to={`/teams/dashboard/${teamId}`}
-              className="p-2 rounded border border-stone-200 text-stone-600 hover:bg-stone-100"
+              className="p-2 rounded-sm border border-[#27272A] bg-[#18181B] text-zinc-400 hover:text-white transition-none"
               aria-label="Back to team dashboard"
               title="Back to team"
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={14} />
             </Link>
           )}
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-9 h-9 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-300 rounded-lg flex items-center justify-center text-amber-900">
-              <LayoutGrid size={18} />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-sm font-black uppercase tracking-widest text-amber-900 leading-tight">
-                Business Model Canvas
-              </h1>
-              <div className="text-xs text-stone-600 truncate">{teamName || 'Team'}</div>
-            </div>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <h1 className="text-base font-bold text-white tracking-tight">
+              Business Model Canvas
+            </h1>
+            <span className="font-mono text-[9px] uppercase tracking-wider bg-[#18181B] border border-[#27272A] text-zinc-400 px-2 py-0.5 rounded-sm shrink-0">
+              {teamName || 'SSD'}
+            </span>
           </div>
         </div>
 
-        <div className="hidden lg:block flex-1 max-w-sm mx-auto">
-          <CompletionMeter sections={sections} />
-        </div>
+        {/* Center/Right: Action Buttons & Telemetry Cluster */}
+        <div className="flex flex-wrap items-center gap-4 ml-auto w-full md:w-auto justify-end">
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {!readOnly && (
+              <>
+                <button
+                  type="button"
+                  onClick={onSaveVersion}
+                  className="px-3 py-1.5 bg-[#2563EB] hover:bg-blue-700 text-white text-[9px] font-mono font-semibold uppercase tracking-widest rounded-sm transition-none flex items-center gap-1.5"
+                  aria-label="Save version"
+                >
+                  <Save size={12} /> <span>Save Version</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={onOpenHistory}
+                  className="px-3 py-1.5 bg-[#18181B] border border-[#27272A] text-zinc-300 hover:text-white hover:border-zinc-500 text-[9px] font-mono font-semibold uppercase tracking-widest rounded-sm transition-none flex items-center gap-1.5"
+                  aria-label="Version history"
+                >
+                  <History size={12} /> <span>History</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={onOpenTemplate}
+                  className="px-3 py-1.5 bg-[#18181B] border border-[#27272A] text-zinc-300 hover:text-white hover:border-zinc-500 text-[9px] font-mono font-semibold uppercase tracking-widest rounded-sm transition-none flex items-center gap-1.5"
+                  aria-label="Use template"
+                >
+                  <Sparkles size={12} /> <span>Template</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={onOpenShare}
+                  className="px-3 py-1.5 bg-[#18181B] border border-[#27272A] text-zinc-300 hover:text-white hover:border-zinc-500 text-[9px] font-mono font-semibold uppercase tracking-widest rounded-sm transition-none flex items-center gap-1.5"
+                  aria-label="Share"
+                >
+                  <Share2 size={12} /> <span>Share</span>
+                </button>
+              </>
+            )}
 
-        <div className="flex items-center gap-2 ml-auto flex-wrap justify-end">
-          {!readOnly && (
-            <PresenceIndicator activeUsers={activeUsers} connected={connected} />
-          )}
-
-          <span
-            className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded ${
-              saving ? 'bg-amber-100 text-amber-800' : 'bg-stone-100 text-stone-700'
-            }`}
-            aria-live="polite"
-          >
-            {saveStatus}
-          </span>
-
-          {!readOnly && (
-            <>
+            <div ref={exportRef} className="relative">
               <button
                 type="button"
-                onClick={onSaveVersion}
-                className="px-3 py-1.5 rounded bg-teal-800 hover:bg-teal-900 text-white text-[11px] font-black uppercase tracking-wider flex items-center gap-1"
-                aria-label="Save version"
+                onClick={() => setExportOpen((v) => !v)}
+                disabled={exporting}
+                className="px-3 py-1.5 bg-[#18181B] border border-[#27272A] text-zinc-300 hover:text-white hover:border-zinc-500 text-[9px] font-mono font-semibold uppercase tracking-widest rounded-sm transition-none flex items-center gap-1.5 disabled:opacity-40"
+                aria-label="Export"
               >
-                <Save size={13} /> <span className="hidden sm:inline">Save Version</span>
+                <Download size={12} /> <span>{exporting ? 'Exporting…' : 'Export'}</span>
+                <ChevronDown size={10} />
               </button>
-              <button
-                type="button"
-                onClick={onOpenHistory}
-                className="px-3 py-1.5 rounded bg-stone-100 hover:bg-stone-200 text-stone-800 text-[11px] font-black uppercase tracking-wider flex items-center gap-1"
-                aria-label="Version history"
-              >
-                <History size={13} /> <span className="hidden sm:inline">History</span>
-              </button>
-              <button
-                type="button"
-                onClick={onOpenTemplate}
-                className="px-3 py-1.5 rounded bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-black uppercase tracking-wider flex items-center gap-1"
-                aria-label="Use template"
-              >
-                <Sparkles size={13} /> <span className="hidden md:inline">Template</span>
-              </button>
-              <button
-                type="button"
-                onClick={onOpenShare}
-                className="px-3 py-1.5 rounded bg-stone-100 hover:bg-stone-200 text-stone-800 text-[11px] font-black uppercase tracking-wider flex items-center gap-1"
-                aria-label="Share"
-              >
-                <Share2 size={13} /> <span className="hidden sm:inline">Share</span>
-              </button>
-            </>
-          )}
+              {exportOpen && (
+                <div className="absolute right-0 mt-1 bg-[#18181B] border border-[#27272A] rounded-sm w-40 z-30 font-mono text-[9px] uppercase tracking-wider">
+                  <button
+                    onClick={() => {
+                      setExportOpen(false);
+                      onExportPDF?.();
+                    }}
+                    className="w-full text-left px-3 py-2 text-zinc-300 hover:text-white hover:bg-white/5"
+                  >
+                    Download PDF
+                  </button>
+                  <button
+                    onClick={() => {
+                      setExportOpen(false);
+                      onExportPNG?.();
+                    }}
+                    className="w-full text-left px-3 py-2 text-zinc-300 hover:text-white hover:bg-white/5 border-t border-[#27272A]"
+                  >
+                    Download PNG
+                  </button>
+                </div>
+              )}
+            </div>
 
-          <div ref={exportRef} className="relative">
             <button
               type="button"
-              onClick={() => setExportOpen((v) => !v)}
-              disabled={exporting}
-              className="px-3 py-1.5 rounded bg-stone-900 hover:bg-stone-800 text-white text-[11px] font-black uppercase tracking-wider flex items-center gap-1 disabled:opacity-40"
-              aria-label="Export"
+              onClick={onToggleFullscreen}
+              className="p-1.5 bg-[#18181B] border border-[#27272A] text-zinc-400 hover:text-white rounded-sm transition-none"
+              aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              title={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
             >
-              <Download size={13} /> <span className="hidden sm:inline">{exporting ? 'Exporting…' : 'Export'}</span>
-              <ChevronDown size={12} />
+              {fullscreen ? <Minimize size={13} /> : <Maximize size={13} />}
             </button>
-            {exportOpen && (
-              <div className="absolute right-0 mt-1 bg-white border border-stone-200 rounded shadow-lg w-40 z-30">
-                <button
-                  onClick={() => {
-                    setExportOpen(false);
-                    onExportPDF?.();
-                  }}
-                  className="w-full text-left px-3 py-2 text-xs font-bold hover:bg-stone-100"
-                >
-                  Download PDF
-                </button>
-                <button
-                  onClick={() => {
-                    setExportOpen(false);
-                    onExportPNG?.();
-                  }}
-                  className="w-full text-left px-3 py-2 text-xs font-bold hover:bg-stone-100 border-t border-stone-100"
-                >
-                  Download PNG
-                </button>
-              </div>
-            )}
           </div>
 
-          <button
-            type="button"
-            onClick={onToggleFullscreen}
-            className="p-2 rounded border border-stone-200 hover:bg-stone-100"
-            aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-            title={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-          >
-            {fullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
-          </button>
-        </div>
-      </div>
+          {/* Telemetry cluster */}
+          <div className="flex flex-col items-end gap-1.5 shrink-0 pl-4 border-l border-[#27272A]">
+            <div className="flex items-center gap-3.5 font-mono text-[9px] uppercase text-zinc-500">
+              {/* Presence list */}
+              {!readOnly && activeUsers?.length > 0 && (
+                <div className="flex -space-x-1.5 mr-2">
+                  {activeUsers.slice(0, 3).map((u) => (
+                    <div
+                      key={u.userId}
+                      title={u.userName}
+                      className="w-5 h-5 rounded-sm border border-[#27272A] flex items-center justify-center text-[8px] font-mono font-bold text-white shadow-none"
+                      style={{ backgroundColor: u.color || '#2563EB' }}
+                    >
+                      {(u.userName || '?').charAt(0).toUpperCase()}
+                    </div>
+                  ))}
+                  {activeUsers.length > 3 && (
+                    <div className="w-5 h-5 rounded-sm border border-[#27272A] bg-[#18181B] text-zinc-400 text-[8px] font-mono font-bold flex items-center justify-center">
+                      +{activeUsers.length - 3}
+                    </div>
+                  )}
+                </div>
+              )}
 
-      <div className="lg:hidden px-4 pb-3">
-        <CompletionMeter sections={sections} compact />
+              <div className="flex items-center gap-1">
+                <span>System:</span>
+                <span className={saving ? 'text-[#2563EB]' : 'text-zinc-300'}>{saveStatus}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className={`w-1.5 h-1.5 rounded-none flex-shrink-0 ${connected ? 'bg-[#2563EB]' : 'bg-red-500'}`} />
+                <span>{connected ? 'Live' : 'Offline'}</span>
+              </div>
+              <div className="flex items-center gap-1 border-l border-[#27272A] pl-3.5">
+                <span>Telemetry:</span>
+                <span className="text-zinc-300">{filled}/{total} ({pct}%)</span>
+              </div>
+            </div>
+            
+            {/* strict geometric line (1px height) progress bar */}
+            <div className="w-40 bg-[#09090B] border border-[#27272A] h-[3px] p-[1px] rounded-none">
+              <div
+                className="h-full bg-[#2563EB] transition-all duration-350"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );

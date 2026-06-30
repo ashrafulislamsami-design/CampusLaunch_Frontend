@@ -54,11 +54,9 @@ function calcCompleteness(form) {
 
 function Section({ title, icon: Icon, children }) {
   return (
-    <div className="placard bg-white border-2 border-stone-200 shadow-[3px_5px_0px_#d97706] p-6 relative overflow-hidden"
-         style={{ borderRadius: '12px 32px 12px 32px' }}>
-      <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/woven.png')] pointer-events-none" />
-      <h3 className="flex items-center gap-2 text-[10px] font-black text-amber-900 font-serif-custom uppercase tracking-widest mb-5 relative z-10">
-        {Icon && <Icon size={13} className="text-teal-700" />}
+    <div className="bg-[#18181B] border border-[#27272A] rounded-sm p-6 relative overflow-hidden">
+      <h3 className="flex items-center gap-2 text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest mb-5 relative z-10">
+        {Icon && <Icon size={12} className="text-[#2563EB]" />}
         {title}
       </h3>
       <div className="relative z-10">{children}</div>
@@ -68,20 +66,17 @@ function Section({ title, icon: Icon, children }) {
 
 // ─── Skill pill ───────────────────────────────────────────────────────────────
 
-function SkillPill({ skill, selected, onClick, accent = 'amber' }) {
+function SkillPill({ skill, selected, onClick }) {
   const Icon = skill.icon;
-  const activeClass = accent === 'teal'
-    ? 'bg-teal-800 border-teal-800 text-teal-50 shadow-[2px_3px_0px_#0f766e]'
-    : 'bg-amber-900 border-amber-900 text-amber-50 shadow-[2px_3px_0px_#78350f]';
+  const activeClass = 'bg-[#2563EB] border-[#2563EB] text-white';
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest border-2 transition-all
-        ${selected ? activeClass : 'bg-white border-stone-200 text-stone-500 hover:border-amber-400 hover:text-amber-900'}`}
-      style={{ borderRadius: '6px 16px 6px 16px' }}
+      className={`flex items-center gap-1.5 px-3 py-1.5 text-[9px] font-mono font-bold uppercase tracking-widest border border-[#27272A] rounded-sm transition-none
+        ${selected ? activeClass : 'bg-[#09090B] text-zinc-500 hover:text-zinc-200 hover:border-zinc-500'}`}
     >
-      {Icon && <Icon size={11} />}
+      {Icon && <Icon size={10} />}
       {skill.label}
     </button>
   );
@@ -136,33 +131,29 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
     try { await onSave(form); } finally { setLoading(false); }
   };
 
-  // Completion colour
-  const barColor = completeness < 40 ? '#ef4444' : completeness < 70 ? '#f59e0b' : '#0d9488';
-
   return (
     <div className="space-y-6">
 
       {/* ── Progress card ─────────────────────────────────────────── */}
-      <div className="jewel-teal p-8 relative overflow-hidden" style={{ borderRadius: '16px 48px 16px 48px' }}>
-        <div className="absolute inset-0 opacity-[0.05] bg-black pointer-events-none" />
+      <div className="bg-[#18181B] border border-[#27272A] p-6 rounded-sm relative overflow-hidden">
         <div className="relative z-10 flex items-center justify-between mb-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-teal-200 mb-1">Profile Completeness</p>
-            <p className="text-5xl font-black text-teal-50 font-serif-custom">{completeness}<span className="text-2xl">%</span></p>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500 mb-1">Profile Completeness</p>
+            <p className="text-5xl font-mono font-bold text-[#2563EB]">{completeness}%</p>
           </div>
           <CheckCircle2
-            size={56}
-            className="text-teal-200 opacity-40"
+            size={40}
+            className="text-[#2563EB] opacity-40"
             strokeWidth={1.5}
           />
         </div>
-        <div className="w-full bg-white/20 rounded-full h-2.5">
+        <div className="w-full bg-[#09090B] border border-[#27272A] h-[2px]">
           <div
-            className="h-2.5 rounded-full transition-all duration-700"
-            style={{ width: `${completeness}%`, backgroundColor: barColor }}
+            className="h-full bg-[#2563EB] transition-all duration-700"
+            style={{ width: `${completeness}%` }}
           />
         </div>
-        <p className="text-teal-200 text-[10px] mt-2 font-medium">
+        <p className="text-zinc-500 font-mono text-[9px] uppercase tracking-wider mt-3">
           {completeness < 50 ? 'Keep going — fill in more details to stand out.' :
            completeness < 80 ? 'Looking good! A few more fields to go.' :
            'Outstanding! Your profile is nearly complete.'}
@@ -171,7 +162,7 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
 
       {/* ── Profile Tag ───────────────────────────────────────────── */}
       <Section title="Your Status Tag" icon={Target}>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2.5">
           {TAG_OPTIONS.map(({ label, value, icon: Icon }) => {
             const active = form.profileTag === value;
             return (
@@ -179,13 +170,12 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
                 key={value}
                 type="button"
                 onClick={() => setForm({ ...form, profileTag: value })}
-                className={`flex items-center gap-2 px-5 py-3 text-[10px] font-black uppercase tracking-widest border-2 transition-all
+                className={`flex items-center gap-2 px-4 py-2.5 text-[9px] font-mono font-bold uppercase tracking-widest border rounded-sm transition-none
                   ${active
-                    ? 'bg-amber-900 border-amber-900 text-amber-50 shadow-[3px_4px_0px_#78350f] transform -translate-y-0.5'
-                    : 'bg-white border-stone-200 text-stone-500 hover:border-amber-400 hover:text-amber-900'}`}
-                style={{ borderRadius: '8px 24px 8px 24px' }}
+                    ? 'bg-[#2563EB] border-[#2563EB] text-white'
+                    : 'bg-[#09090B] border-[#27272A] text-zinc-500 hover:text-zinc-300 hover:border-zinc-500'}`}
               >
-                <Icon size={12} />
+                <Icon size={11} />
                 {label}
               </button>
             );
@@ -203,13 +193,12 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
             { label: 'LinkedIn URL',      key: 'linkedinUrl',       placeholder: 'https://linkedin.com/in/…' },
           ].map(({ label, key, placeholder, type = 'text' }) => (
             <div key={key}>
-              <label className="block text-[10px] font-black text-amber-900 uppercase tracking-widest mb-1.5">
+              <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest mb-1.5">
                 {label}
               </label>
               <input
                 type={type}
-                className="w-full border-2 border-stone-200 bg-stone-50 px-4 py-2.5 text-sm font-medium text-stone-800 focus:border-amber-400 focus:outline-none focus:bg-white transition-all placeholder-stone-300"
-                style={{ borderRadius: '8px 20px 8px 20px' }}
+                className="w-full border border-[#27272A] bg-[#09090B] px-4 py-2.5 text-xs text-zinc-100 focus:border-[#2563EB] focus:outline-none transition-colors duration-150 placeholder-zinc-700 rounded-sm"
                 value={form[key]}
                 onChange={e => setForm({ ...form, [key]: e.target.value })}
                 placeholder={placeholder}
@@ -219,19 +208,19 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
 
           {/* Weekly Availability */}
           <div className="sm:col-span-2">
-            <label className="block text-[10px] font-black text-amber-900 uppercase tracking-widest mb-1.5">
+            <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest mb-1.5">
               Weekly Availability
             </label>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 bg-[#09090B] border border-[#27272A] rounded-sm p-4">
               <input
                 type="range"
                 min={0} max={40}
                 value={form.weeklyAvailability}
                 onChange={e => setForm({ ...form, weeklyAvailability: Number(e.target.value) })}
-                className="flex-1 accent-amber-600"
+                className="flex-1 appearance-none bg-[#18181B] h-1 border border-[#27272A] rounded-none accent-[#2563EB] cursor-pointer"
               />
-              <span className="text-2xl font-black text-amber-900 font-serif-custom w-20 text-right">
-                {form.weeklyAvailability}<span className="text-sm font-bold"> hrs</span>
+              <span className="text-xl font-bold font-mono text-[#2563EB] w-20 text-right shrink-0">
+                {form.weeklyAvailability}<span className="text-xs text-zinc-500"> hrs</span>
               </span>
             </div>
           </div>
@@ -247,7 +236,6 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
               skill={skill}
               selected={form.skills.includes(skill.value)}
               onClick={() => toggleSkill(skill.value, 'skills')}
-              accent="amber"
             />
           ))}
         </div>
@@ -262,7 +250,6 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
               skill={skill}
               selected={form.lookingForSkills.includes(skill.value)}
               onClick={() => toggleSkill(skill.value, 'lookingForSkills')}
-              accent="teal"
             />
           ))}
         </div>
@@ -271,19 +258,17 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
       {/* ── Motivation ────────────────────────────────────────────── */}
       <Section title="Motivation" icon={Rocket}>
         <textarea
-          className="w-full border-2 border-stone-200 bg-stone-50 px-4 py-3 text-sm font-medium text-stone-800 focus:border-amber-400 focus:outline-none focus:bg-white transition-all placeholder-stone-300 min-h-[100px] resize-none"
-          style={{ borderRadius: '8px 24px 8px 24px' }}
+          className="w-full border border-[#27272A] bg-[#09090B] px-4 py-3 text-xs text-zinc-100 focus:border-[#2563EB] focus:outline-none transition-colors duration-150 placeholder-zinc-700 min-h-[100px] resize-none rounded-sm"
           value={form.motivation}
           onChange={e => setForm({ ...form, motivation: e.target.value })}
           placeholder="What drives you as a student entrepreneur? What problem are you trying to solve?"
         />
       </Section>
 
-      {/* ── Startup Idea ──────────────────────────────────────────── */}
+      {/* ── Startup Idea (optional) ────────────────────────────────── */}
       <Section title="Startup Idea (optional)" icon={Lightbulb}>
         <textarea
-          className="w-full border-2 border-stone-200 bg-stone-50 px-4 py-3 text-sm font-medium text-stone-800 focus:border-amber-400 focus:outline-none focus:bg-white transition-all placeholder-stone-300 min-h-[80px] resize-none"
-          style={{ borderRadius: '8px 24px 8px 24px' }}
+          className="w-full border border-[#27272A] bg-[#09090B] px-4 py-3 text-xs text-zinc-100 focus:border-[#2563EB] focus:outline-none transition-colors duration-150 placeholder-zinc-700 min-h-[80px] resize-none rounded-sm"
           value={form.startupIdea}
           onChange={e => setForm({ ...form, startupIdea: e.target.value })}
           placeholder="Briefly describe your startup idea…"
@@ -296,75 +281,65 @@ export default function ProfileForm({ initialData = {}, onSave, isEdit = false }
           {form.pastProjects.map((proj, idx) => (
             <div
               key={idx}
-              className="bg-stone-50 border-2 border-stone-200 p-4 flex justify-between items-start"
-              style={{ borderRadius: '8px 20px 8px 20px' }}
+              className="bg-[#09090B] border border-[#27272A] p-4 flex justify-between items-start rounded-sm"
             >
               <div>
-                <p className="text-xs font-black text-amber-900 uppercase tracking-wider">{proj.title}</p>
-                <p className="text-stone-500 text-xs mt-1">{proj.description}</p>
+                <p className="text-[10px] font-mono font-bold text-white uppercase tracking-wider">{proj.title}</p>
+                <p className="text-zinc-400 text-xs mt-1">{proj.description}</p>
               </div>
-              <button onClick={() => removeProject(idx)} className="text-red-400 hover:text-red-600 ml-4 mt-0.5 flex-shrink-0">
-                <Trash2 size={14} />
+              <button type="button" onClick={() => removeProject(idx)} className="text-red-400 hover:text-red-500 ml-4 mt-0.5 flex-shrink-0">
+                <Trash2 size={12} />
               </button>
             </div>
           ))}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <input
-            className="border-2 border-stone-200 bg-stone-50 px-4 py-2.5 text-sm focus:border-amber-400 focus:outline-none transition-all placeholder-stone-300"
-            style={{ borderRadius: '8px 20px 8px 20px' }}
+            className="border border-[#27272A] bg-[#09090B] px-4 py-2.5 text-xs text-zinc-100 focus:border-[#2563EB] focus:outline-none transition-colors placeholder-zinc-700 rounded-sm"
             placeholder="Project title"
             value={newProject.title}
             onChange={e => setNewProject({ ...newProject, title: e.target.value })}
           />
           <input
-            className="border-2 border-stone-200 bg-stone-50 px-4 py-2.5 text-sm focus:border-amber-400 focus:outline-none transition-all placeholder-stone-300"
-            style={{ borderRadius: '8px 20px 8px 20px' }}
+            className="border border-[#27272A] bg-[#09090B] px-4 py-2.5 text-xs text-zinc-100 focus:border-[#2563EB] focus:outline-none transition-colors placeholder-zinc-700 rounded-sm"
             placeholder="Short description"
             value={newProject.description}
             onChange={e => setNewProject({ ...newProject, description: e.target.value })}
           />
           <button
+            type="button"
             onClick={addProject}
-            className="flex items-center justify-center gap-2 bg-teal-800 text-teal-50 text-[10px] font-black uppercase tracking-widest border-2 border-teal-800 hover:bg-teal-700 transition-all shadow-[2px_3px_0px_#0f766e]"
-            style={{ borderRadius: '8px 24px 8px 24px' }}
+            className="flex items-center justify-center gap-2 bg-[#2563EB] text-white text-[9px] font-mono font-semibold uppercase tracking-widest border border-[#2563EB] hover:bg-blue-700 transition-colors rounded-sm shadow-none"
           >
-            <Plus size={13} /> Add Project
+            <Plus size={12} /> Add Project
           </button>
         </div>
       </Section>
 
       {/* ── Visibility ────────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 px-2">
+      <div className="flex items-center gap-2.5 px-2 py-4 border-t border-[#27272A]">
         <button
           type="button"
           onClick={() => setForm({ ...form, isPublic: !form.isPublic })}
-          className={`w-10 h-6 rounded-full border-2 relative transition-all flex-shrink-0
-            ${form.isPublic ? 'bg-teal-700 border-teal-700' : 'bg-stone-200 border-stone-300'}`}
+          className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-widest text-zinc-500 hover:text-zinc-300 transition-colors duration-150"
         >
-          <span
-            className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all
-              ${form.isPublic ? 'left-4' : 'left-0.5'}`}
-          />
+          <span className={`w-1.5 h-1.5 rounded-none flex-shrink-0 ${form.isPublic ? 'bg-green-500' : 'bg-red-500'}`} />
+          <span>{form.isPublic ? 'Profile is visible to other students' : 'Profile is hidden (private)'}</span>
         </button>
-        <span className="text-xs font-bold text-stone-600">
-          {form.isPublic ? 'Profile is visible to other students' : 'Profile is hidden (private)'}
-        </span>
       </div>
 
       {/* ── Submit ────────────────────────────────────────────────── */}
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full flex items-center justify-center gap-3 bg-amber-900 text-amber-50 font-black py-4 uppercase tracking-widest text-sm border-2 border-transparent hover:bg-amber-100 hover:text-amber-900 hover:border-amber-400 transition-all shadow-[4px_6px_0px_#78350f] hover:shadow-[2px_3px_0px_#78350f] hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none"
-        style={{ borderRadius: '8px 32px 8px 32px' }}
+        className="w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-[9px] font-semibold uppercase tracking-widest py-4 border border-transparent disabled:bg-zinc-800 disabled:text-zinc-500 transition-colors duration-150 rounded-sm shadow-none"
       >
         {loading ? (
           <span className="animate-pulse">Saving…</span>
         ) : (
           <>
-            <Rocket size={16} />
-            {isEdit ? 'Update Profile' : 'Create Profile'}
+            <Rocket size={12} />
+            <span>{isEdit ? 'Update Profile' : 'Create Profile'}</span>
           </>
         )}
       </button>

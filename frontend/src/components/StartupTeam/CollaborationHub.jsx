@@ -163,7 +163,7 @@ const CollaborationHub = ({ teamId, messages: initialMessages = [], documents = 
         return (
           <span 
             key={idx} 
-            className="bg-[#5865f226] text-[#5865f2] font-semibold px-1 rounded hover:bg-[#5865f2] hover:text-white transition-all cursor-pointer"
+            className="bg-[#2563EB15] text-[#60A5FA] border border-[#2563EB35] font-mono text-[9px] px-1.5 py-0.5 rounded-sm hover:bg-[#2563EB] hover:text-white transition-all cursor-pointer"
           >
             @{part}
           </span>
@@ -233,34 +233,43 @@ const CollaborationHub = ({ teamId, messages: initialMessages = [], documents = 
   };
 
   return (
-    <div className="placard p-8 bg-[#ebe9e4] relative overflow-hidden flex flex-col min-h-[500px]">
-      <div className="absolute inset-0 opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] mix-blend-overlay pointer-events-none"></div>
+    <div className="bg-[#18181B] border border-[#27272A] rounded-sm p-6 relative overflow-hidden flex flex-col min-h-[500px]">
       
-      <div className="flex justify-between items-center mb-8 relative z-10 border-b-2 border-amber-300 pb-4">
-        <h2 className="text-3xl font-black text-amber-900 font-serif-custom">Collaboration Hub</h2>
+      <div className="flex justify-between items-center mb-8 relative z-10 border-b border-[#27272A] pb-4">
+        <h2 className="text-base font-bold text-white tracking-tight">Collaboration Hub</h2>
         <div className="flex gap-2">
           {activeSubTab === 'feed' && (
             <button
               onClick={() => setShowPinned(!showPinned)}
-              className={`px-4 py-2 text-xs font-black uppercase tracking-widest transition flex items-center gap-2 ${showPinned ? 'bg-amber-900 text-amber-50' : 'bg-stone-200/50 text-amber-900/60 hover:text-amber-900'}`}
-              style={{ borderRadius: '4px 12px 4px 12px' }}
+              className={`px-3 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-widest transition flex items-center gap-1.5 border rounded-sm ${
+                showPinned 
+                  ? 'bg-[#2563EB15] border-[#2563EB] text-[#60A5FA]' 
+                  : 'bg-[#09090B] border-[#27272A] text-zinc-500 hover:text-zinc-300'
+              }`}
               title="View pinned messages"
             >
-              <Pin size={16} /> Pinned
+              <Pin size={12} /> <span>Pinned</span>
             </button>
           )}
-          <div className="flex bg-stone-200/50 p-1 rounded-lg border border-amber-200">
+          
+          <div className="flex bg-[#09090B] border border-[#27272A] rounded-sm p-0.5">
             <button 
               onClick={() => { setActiveSubTab('feed'); setShowPinned(false); }}
-              className={`px-4 py-2 text-xs font-black uppercase tracking-widest transition ${activeSubTab === 'feed' ? 'bg-amber-900 text-amber-50 shadow-sm' : 'text-amber-900/60 hover:text-amber-900'}`}
-              style={{ borderRadius: '4px 12px 4px 12px' }}
+              className={`px-3 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-widest transition rounded-sm ${
+                activeSubTab === 'feed' 
+                  ? 'bg-[#18181B] border border-[#27272A] text-white' 
+                  : 'border border-transparent text-zinc-500 hover:text-zinc-300'
+              }`}
             >
               Team Feed
             </button>
             <button 
               onClick={() => setActiveSubTab('vault')}
-              className={`px-4 py-2 text-xs font-black uppercase tracking-widest transition ${activeSubTab === 'vault' ? 'bg-amber-900 text-amber-50 shadow-sm' : 'text-amber-900/60 hover:text-amber-900'}`}
-              style={{ borderRadius: '4px 12px 4px 12px' }}
+              className={`px-3 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-widest transition rounded-sm ${
+                activeSubTab === 'vault' 
+                  ? 'bg-[#18181B] border border-[#27272A] text-white' 
+                  : 'border border-transparent text-zinc-500 hover:text-zinc-300'
+              }`}
             >
               Resource Vault
             </button>
@@ -273,15 +282,15 @@ const CollaborationHub = ({ teamId, messages: initialMessages = [], documents = 
           <div className="flex flex-col h-full">
             {/* Pinned Messages Panel */}
             {showPinned && pinnedMessages.length > 0 && (
-              <div className="mb-4 p-4 bg-white border-2 border-amber-400 rounded-lg" style={{borderRadius: '8px 24px 8px 24px'}}>
-                <h3 className="font-black text-amber-900 mb-3 flex items-center gap-2">
-                  <Pin size={18} /> Pinned Messages
+              <div className="mb-4 p-4 bg-[#09090B] border border-[#2563EB35] rounded-sm">
+                <h3 className="font-mono text-[10px] uppercase tracking-widest text-[#60A5FA] mb-3 flex items-center gap-2">
+                  <Pin size={14} /> Pinned Messages
                 </h3>
                 <div className="space-y-2 max-h-[200px] overflow-y-auto">
                   {pinnedMessages.map((m) => (
-                    <div key={m._id} className="bg-amber-50 p-2 border-l-4 border-amber-400">
-                      <div className="text-xs font-bold text-amber-900">{m.senderName}</div>
-                      <div className="text-sm text-stone-700">{m.text.slice(0, 100)}...</div>
+                    <div key={m._id} className="bg-[#18181B] p-3 border-l-2 border-[#2563EB] rounded-sm">
+                      <div className="text-[10px] font-mono font-bold text-[#60A5FA]">{m.senderName}</div>
+                      <div className="text-xs text-zinc-400 mt-1">{m.text.slice(0, 100)}...</div>
                     </div>
                   ))}
                 </div>
@@ -289,41 +298,48 @@ const CollaborationHub = ({ teamId, messages: initialMessages = [], documents = 
             )}
 
             {/* Messages Feed */}
-            <div className="flex-grow overflow-y-auto space-y-4 mb-6 pr-2">
+            <div className="flex-grow overflow-y-auto space-y-3 mb-6 pr-2">
               {messages.length === 0 && (
-                <div className="text-center py-12 text-stone-400 italic border-2 border-dashed border-stone-300 bg-stone-50" style={{borderRadius: '12px 32px 12px 32px'}}>
+                <div className="text-center py-12 text-zinc-600 font-mono text-[9px] uppercase tracking-widest border border-dashed border-[#27272A] bg-[#09090B] rounded-sm">
                   No transmissions recorded yet. Start the conversation.
                 </div>
               )}
               {messages.map((m) => (
-                <div key={m._id} className={`bg-white border-2 p-4 shadow-[3px_4px_0px_#fcd34d] group relative ${m.isPinned ? 'border-amber-400 bg-amber-50' : 'border-amber-200'}`} style={{borderRadius: '8px 24px 8px 24px'}}>
+                <div 
+                  key={m._id} 
+                  className={`border p-4 group relative rounded-sm transition-colors duration-150 ${
+                    m.isPinned 
+                      ? 'border-[#2563EB] bg-[#2563EB05]' 
+                      : 'border-[#27272A] bg-[#09090B] hover:border-zinc-500'
+                  }`}
+                >
                   <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-black text-amber-900 text-sm uppercase tracking-wider">{m.senderName}</span>
-                      <span className="text-xs text-teal-900 font-black bg-teal-100/80 px-2 py-1 border border-teal-200 uppercase tracking-widest" style={{borderRadius: '4px 8px 4px 8px'}}>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-zinc-100 text-xs tracking-tight">{m.senderName}</span>
+                      <span className="font-mono text-[8px] font-bold text-zinc-400 bg-[#18181B] px-1.5 py-0.5 border border-[#27272A] rounded-sm uppercase tracking-widest">
                         {m.senderRole}
                       </span>
-                      {m.isPinned && <Pin size={14} className="text-amber-600" />}
+                      {m.isPinned && <Pin size={12} className="text-[#60A5FA]" />}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-stone-400 font-bold">{new Date(m.createdAt).toLocaleTimeString()}</span>
+                      <span className="text-[8px] font-mono text-zinc-600">{new Date(m.createdAt).toLocaleTimeString()}</span>
                       <button
                         onClick={() => handlePinMessage(m._id, m.isPinned)}
-                        className="opacity-0 group-hover:opacity-100 transition text-amber-600 hover:text-amber-800"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-500 hover:text-[#60A5FA]"
                         title={m.isPinned ? 'Unpin' : 'Pin'}
                       >
-                        <Pin size={14} />
+                        <Pin size={12} />
                       </button>
                       <button
                         onClick={() => handleDeleteMessage(m._id)}
-                        className="opacity-0 group-hover:opacity-100 transition text-red-400 hover:text-red-600"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-500 hover:text-red-400"
                         title="Delete message"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   </div>
-                  <p className="text-stone-700 font-medium text-sm leading-relaxed">{renderMessageWithMentions(m.text)}</p>
+                  <p className="text-zinc-300 font-medium text-xs leading-relaxed mt-2">{renderMessageWithMentions(m.text)}</p>
                 </div>
               ))}
             </div>
@@ -336,64 +352,69 @@ const CollaborationHub = ({ teamId, messages: initialMessages = [], documents = 
                   value={msgText}
                   onChange={handleTextChange}
                   placeholder="Type @ to mention teammates..."
-                  className="w-full px-4 py-3 bg-white border-[3px] border-amber-200 shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-0 text-stone-800 font-medium text-sm resize-none"
-                  style={{borderRadius: '8px 24px 8px 24px'}}
+                  className="w-full px-4 py-3 bg-[#09090B] border border-[#27272A] focus:border-[#2563EB] focus:ring-0 text-zinc-100 text-xs placeholder-zinc-700 font-mono resize-none rounded-sm transition-colors duration-150 focus:outline-none"
                   rows="2"
                 />
                 
                 {/* @ Mention Dropdown */}
                 {mentionDropdown && filteredMembers.length > 0 && (
-                  <div className="absolute bottom-full mb-2 left-0 right-0 bg-white border-2 border-amber-300 shadow-lg z-50 max-h-[200px] overflow-y-auto" style={{borderRadius: '8px 24px 8px 24px'}}>
+                  <div className="absolute bottom-full mb-2 left-0 right-0 bg-[#18181B] border border-[#27272A] shadow-xl z-50 max-h-[200px] overflow-y-auto rounded-sm">
                     {filteredMembers.map((member) => (
                       <button
                         key={member._id}
                         type="button"
                         onClick={() => handleSelectMention(member)}
-                        className="w-full text-left px-4 py-2 hover:bg-amber-50 border-b border-amber-100 last:border-b-0"
+                        className="w-full text-left px-4 py-2 hover:bg-[#2563EB10] border-b border-[#27272A] last:border-b-0"
                       >
-                        <div className="font-bold text-amber-900">{member.name}</div>
-                        <div className="text-xs text-stone-500">{member.role}</div>
+                        <div className="font-mono text-[10px] uppercase tracking-wider text-zinc-100">{member.name}</div>
+                        <div className="text-[8px] font-mono text-zinc-500 uppercase">{member.role}</div>
                       </button>
                     ))}
                   </div>
                 )}
               </div>
-              <button type="submit" className="gilded-btn w-full flex items-center justify-center gap-2">
-                <Send size={20} className="icon-tactile" /> Send
+              <button 
+                type="submit" 
+                className="w-full bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-[9px] font-semibold uppercase tracking-widest py-2.5 flex items-center justify-center gap-1.5 rounded-sm transition duration-150"
+              >
+                <Send size={14} /> <span>Send</span>
               </button>
             </form>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-black text-amber-900 font-serif-custom">Resource Vault</h3>
+              <h3 className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 font-semibold">Resource Vault</h3>
               <button 
                 onClick={() => setShowDocForm(!showDocForm)}
-                className="gilded-btn px-4 py-1.5 text-xs"
+                className="bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-[9px] font-semibold uppercase tracking-widest px-3 py-1.5 rounded-sm transition-colors"
               >
                 {showDocForm ? 'Close' : '+ Add Link'}
               </button>
             </div>
 
             {showDocForm && (
-              <form onSubmit={handleAddDocument} className="bg-amber-50 border-2 border-amber-200 p-6 shadow-[4px_6px_0px_#d97706] space-y-4 mb-8" style={{borderRadius: '12px 32px 12px 32px'}}>
+              <form 
+                onSubmit={handleAddDocument} 
+                className="bg-[#09090B] border border-[#27272A] p-5 rounded-sm space-y-4 mb-6"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-amber-900 mb-1">Title</label>
+                    <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-500 mb-1.5">Title</label>
                     <input 
                       type="text"
                       value={docData.title}
                       onChange={e => setDocData({...docData, title: e.target.value})}
                       required
-                      className="w-full px-4 py-2 border-2 border-amber-200 focus:border-amber-400 focus:ring-0 bg-white text-sm font-bold"
+                      className="w-full px-3 py-2 bg-[#18181B] border border-[#27272A] focus:border-[#2563EB] focus:ring-0 text-zinc-100 text-xs rounded-sm focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-amber-900 mb-1">Category</label>
+                    <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-500 mb-1.5">Category</label>
                     <select 
                       value={docData.category}
                       onChange={e => setDocData({...docData, category: e.target.value})}
-                      className="w-full px-4 py-2 border-2 border-amber-200 focus:border-amber-400 focus:ring-0 bg-white text-sm font-bold"
+                      className="w-full px-3 py-2 bg-[#18181B] border border-[#27272A] focus:border-[#2563EB] focus:ring-0 text-zinc-300 text-xs rounded-sm focus:outline-none transition-colors cursor-pointer"
                     >
                       <option value="Google Doc">Google Doc</option>
                       <option value="Figma">Figma</option>
@@ -404,48 +425,55 @@ const CollaborationHub = ({ teamId, messages: initialMessages = [], documents = 
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-amber-900 mb-1">Link URL</label>
+                  <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-500 mb-1.5">Link URL</label>
                   <input 
                     type="url"
                     value={docData.url}
                     onChange={e => setDocData({...docData, url: e.target.value})}
                     required
                     placeholder="https://docs.google.com/..."
-                    className="w-full px-4 py-2 border-2 border-amber-200 focus:border-amber-400 focus:ring-0 bg-white text-sm font-bold"
+                    className="w-full px-3 py-2 bg-[#18181B] border border-[#27272A] focus:border-[#2563EB] focus:ring-0 text-zinc-100 text-xs rounded-sm focus:outline-none transition-colors"
                   />
                 </div>
-                <button type="submit" className="gilded-btn w-full">Commit to Vault</button>
+                <button 
+                  type="submit" 
+                  className="w-full bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-[9px] font-semibold uppercase tracking-widest py-2.5 rounded-sm transition-colors"
+                >
+                  Commit to Vault
+                </button>
               </form>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {documents.length === 0 && !showDocForm && (
-                <div className="col-span-full text-center py-12 text-stone-400 italic border-2 border-dashed border-stone-300 bg-stone-50" style={{borderRadius: '12px 32px 12px 32px'}}>
+                <div className="col-span-full text-center py-12 text-zinc-600 font-mono text-[9px] uppercase tracking-widest border border-dashed border-[#27272A] bg-[#09090B] rounded-sm">
                   Vault is currently empty.
                 </div>
               )}
               {documents.map((doc, idx) => (
-                <div key={doc._id || idx} className="placard p-4 bg-white hover:border-amber-400 transition group relative overflow-hidden" style={{borderRadius: '8px 24px 8px 24px'}}>
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-amber-100 flex items-center justify-center text-amber-700 border border-amber-300 shadow-sm" style={{borderRadius: '6px 12px 6px 12px'}}>
-                      <LinkIcon size={20} />
-                    </div>
-                    <div>
-                      <h4 className="font-black text-amber-900 text-sm uppercase tracking-tight">{doc.title}</h4>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-stone-500">
-                        <span>{getUploaderLabel(doc)}</span>
-                        <span className="px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">{doc.category}</span>
-                      </div>
+                <div 
+                  key={doc._id || idx} 
+                  className="p-4 bg-[#09090B] border border-[#27272A] hover:border-zinc-500 transition-colors group relative rounded-sm flex items-start gap-4"
+                >
+                  <div className="w-10 h-10 bg-[#18181B] border border-[#27272A] text-zinc-400 flex items-center justify-center rounded-sm shrink-0">
+                    <LinkIcon size={16} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-sans text-xs font-bold text-zinc-100 truncate pr-6">{doc.title}</h4>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[9px] font-mono text-zinc-500">
+                      <span>{getUploaderLabel(doc)}</span>
+                      <span className="px-2 py-0.5 bg-[#18181B] border border-[#27272A] text-zinc-400 rounded-sm uppercase tracking-widest">{doc.category}</span>
                     </div>
                   </div>
+                  
                   <div className="absolute bottom-4 right-4 flex items-center gap-2">
                     {isCEO && (
                       <button
                         onClick={() => handleDeleteDocument(doc._id)}
-                        className="opacity-0 group-hover:opacity-100 transition text-red-400 hover:text-red-600"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-500 hover:text-red-400"
                         title="Remove from vault"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                       </button>
                     )}
                     {doc.url && (doc.url.includes('/ai/report/') || doc.url.includes('/api/ai/reports/')) ? (
@@ -459,18 +487,18 @@ const CollaborationHub = ({ teamId, messages: initialMessages = [], documents = 
                           const rawId = url.split('/api/ai/reports/').pop();
                           return `/ai/report/${rawId.replace(/[^a-zA-Z0-9]/g, '')}`;
                         })()}
-                        className="text-amber-300 group-hover:text-amber-700 transition"
+                        className="text-zinc-500 hover:text-[#60A5FA] transition-colors"
                       >
-                        <ExternalLink size={18} />
+                        <ExternalLink size={14} />
                       </Link>
                     ) : (
                       <a 
                         href={doc.url} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-amber-300 group-hover:text-amber-700 transition"
+                        className="text-zinc-500 hover:text-[#60A5FA] transition-colors"
                       >
-                        <ExternalLink size={18} />
+                        <ExternalLink size={14} />
                       </a>
                     )}
                   </div>

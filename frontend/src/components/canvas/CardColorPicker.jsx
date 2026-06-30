@@ -4,7 +4,7 @@ import { CARD_COLORS } from './canvasConstants';
 // Tiny 5-swatch picker used inside StickyCard.
 const CardColorPicker = ({ value, onChange }) => (
   <div
-    className="flex items-center gap-1 bg-white/90 border border-stone-200 rounded-full px-1 py-1 shadow-sm"
+    className="flex items-center gap-1 bg-[#18181B] border border-[#27272A] rounded-sm px-1.5 py-1.5 shadow-none"
     onClick={(e) => e.stopPropagation()}
   >
     {Object.keys(CARD_COLORS).map((key) => (
@@ -13,9 +13,9 @@ const CardColorPicker = ({ value, onChange }) => (
         type="button"
         aria-label={`Set card color ${key}`}
         onClick={() => onChange(key)}
-        className={`w-4 h-4 rounded-full ${CARD_COLORS[key].dot} border ${
-          value === key ? 'border-stone-800 scale-110' : 'border-white'
-        } transition`}
+        className={`w-3.5 h-3.5 rounded-sm ${CARD_COLORS[key].dot} border ${
+          value === key ? 'border-white' : 'border-transparent'
+        } transition-none`}
       />
     ))}
   </div>

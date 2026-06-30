@@ -36,40 +36,81 @@ const CreateTeam = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-12 px-4">
-      <div className="bg-white rounded-xl shadow-md border border-indigo-50 p-8">
-        <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Rocket size={32} />
+    <div className="min-h-screen bg-[#09090B] flex items-center justify-center py-12 px-4">
+      <div className="bg-[#18181B] border border-[#27272A] rounded-sm p-8 max-w-2xl w-full">
+        {/* Terminal Header */}
+        <div className="border-b border-[#27272A] pb-6 mb-6">
+          <div className="flex items-center space-x-2 mb-2 font-mono text-[9px] text-zinc-600">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+            <span>SYS_INIT // SECURE_INTAKE_SESSION</span>
+          </div>
+          <h2 className="text-xl font-bold text-white tracking-tight">Start Your Journey</h2>
+          <p className="font-mono text-[10px] uppercase text-zinc-500 mt-1">CampusLaunch // Venture Initialization Parameters</p>
         </div>
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Start Your Journey</h2>
         
-        {error && <div className="bg-red-100 text-red-700 p-4 rounded-md mb-6">{error}</div>}
+        {error && (
+          <div className="border border-red-500/30 bg-red-950/20 text-red-400 p-4 font-mono text-xs rounded-sm mb-6">
+            ERROR: {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Startup Name</label>
-              <input type="text" name="name" onChange={handleChange} required className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" placeholder="e.g. NextGen AI" />
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Startup Name</label>
+              <input 
+                type="text" 
+                name="name" 
+                onChange={handleChange} 
+                required 
+                className="w-full px-4 py-2 bg-[#09090B] border border-[#27272A] text-white rounded-sm focus:border-[#2563EB] focus:ring-0 focus:outline-none transition-colors" 
+                placeholder="e.g. NextGen AI" 
+              />
             </div>
             
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Problem Statement</label>
-              <textarea name="problemStatement" onChange={handleChange} required rows="3" className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" placeholder="What problem are you solving?"></textarea>
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Problem Statement</label>
+              <textarea 
+                name="problemStatement" 
+                onChange={handleChange} 
+                required 
+                rows="3" 
+                className="w-full px-4 py-2 bg-[#09090B] border border-[#27272A] text-white rounded-sm focus:border-[#2563EB] focus:ring-0 focus:outline-none transition-colors" 
+                placeholder="What problem are you solving?"
+              ></textarea>
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Your Solution</label>
-              <textarea name="solution" onChange={handleChange} required rows="3" className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" placeholder="How does your startup solve it?"></textarea>
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Your Solution</label>
+              <textarea 
+                name="solution" 
+                onChange={handleChange} 
+                required 
+                rows="3" 
+                className="w-full px-4 py-2 bg-[#09090B] border border-[#27272A] text-white rounded-sm focus:border-[#2563EB] focus:ring-0 focus:outline-none transition-colors" 
+                placeholder="How does your startup solve it?"
+              ></textarea>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Target Customer</label>
-              <input type="text" name="targetCustomer" onChange={handleChange} required className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" placeholder="e.g. College Students" />
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Target Customer</label>
+              <input 
+                type="text" 
+                name="targetCustomer" 
+                onChange={handleChange} 
+                required 
+                className="w-full px-4 py-2 bg-[#09090B] border border-[#27272A] text-white rounded-sm focus:border-[#2563EB] focus:ring-0 focus:outline-none transition-colors" 
+                placeholder="e.g. College Students" 
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Current Stage</label>
-              <select name="stage" onChange={handleChange} className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Current Stage</label>
+              <select 
+                name="stage" 
+                onChange={handleChange} 
+                className="w-full px-4 py-2 bg-[#09090B] border border-[#27272A] text-white rounded-sm focus:border-[#2563EB] focus:ring-0 focus:outline-none transition-colors"
+              >
                 <option value="Idea">Just an Idea</option>
                 <option value="Testing">Testing</option>
                 <option value="Building MVP">Building MVP</option>
@@ -79,7 +120,10 @@ const CreateTeam = () => {
           </div>
           
           <div className="pt-4">
-            <button type="submit" className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 font-medium transition">
+            <button 
+              type="submit" 
+              className="w-full bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-mono text-xs uppercase tracking-widest py-3 px-4 rounded-sm transition duration-150"
+            >
               Create Team workspace
             </button>
           </div>

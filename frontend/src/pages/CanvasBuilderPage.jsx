@@ -329,9 +329,8 @@ const CanvasBuilderPage = () => {
   }
 
   const teamName = team?.name || 'Team';
-
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[#09090B]">
       <CanvasHeader
         teamName={teamName}
         teamId={team?._id}
@@ -350,6 +349,7 @@ const CanvasBuilderPage = () => {
         fullscreen={fullscreen}
         onToggleFullscreen={handleToggleFullscreen}
         readOnly={readOnly}
+        sidebarOpen={!!openCommentsSection || historyOpen}
       />
 
       {!connected && !readOnly && (
@@ -358,7 +358,7 @@ const CanvasBuilderPage = () => {
         </div>
       )}
 
-      <main className="max-w-[1880px] mx-auto px-2 md:px-4 py-4">
+      <main className={`max-w-[1880px] mx-auto px-2 md:px-4 py-4 transition-all duration-150 ${(openCommentsSection || historyOpen) ? 'lg:pr-[380px]' : ''}`}>
         <CanvasGrid
           sections={sections}
           sectionFocus={sectionFocus}

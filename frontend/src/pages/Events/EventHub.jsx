@@ -4,31 +4,135 @@ import { AuthContext } from '../../context/AuthContext';
 import { API_BASE_URL as API } from '@/config';
 import {
   Search, Filter, MapPin, Video, Calendar, Users,
-  Clock, Tag, Rocket, Plus, ExternalLink
+  Clock, Tag, Rocket, Plus, ExternalLink, ChevronRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const TYPE_OPTIONS  = ['All', 'pitch-competition', 'hackathon', 'workshop', 'networking', 'webinar', 'other'];
+/* ─── Filter option constants (UNCHANGED) ───────────────────────── */
+const TYPE_OPTIONS   = ['All', 'pitch-competition', 'hackathon', 'workshop', 'networking', 'webinar', 'other'];
 const FORMAT_OPTIONS = ['All', 'online', 'in-person', 'hybrid'];
 const STATUS_OPTIONS = ['All', 'upcoming', 'live', 'completed'];
 
-const TYPE_COLORS = {
-  'pitch-competition': 'bg-amber-100 text-amber-900 border-amber-300',
-  'hackathon':         'bg-teal-100  text-teal-900  border-teal-300',
-  'workshop':          'bg-stone-100 text-stone-700 border-stone-300',
-  'networking':        'bg-amber-50  text-amber-700 border-amber-200',
-  'webinar':           'bg-teal-50   text-teal-700  border-teal-200',
-  'other':             'bg-stone-50  text-stone-600 border-stone-200',
+/* ─── Swiss Blueprint type badge styles ─────────────────────────── */
+const TYPE_BADGE = {
+  'pitch-competition': { bg: '#2563EB18', color: '#60A5FA', border: '#2563EB40' },
+  'hackathon':         { bg: '#16A34A18', color: '#4ADE80', border: '#16A34A40' },
+  'workshop':          { bg: '#7C3AED18', color: '#C084FC', border: '#7C3AED40' },
+  'networking':        { bg: '#CA8A0418', color: '#FCD34D', border: '#CA8A0440' },
+  'webinar':           { bg: '#0891B218', color: '#22D3EE', border: '#0891B240' },
+  'other':             { bg: '#71717A18', color: '#A1A1AA', border: '#3F3F4640' },
 };
 
-const STATUS_COLORS = {
-  'upcoming':  'bg-teal-100  text-teal-800',
-  'live':      'bg-green-100 text-green-800',
-  'completed': 'bg-stone-100 text-stone-600',
-  'cancelled': 'bg-red-100   text-red-700',
+const STATUS_BADGE = {
+  'upcoming':  { bg: '#2563EB18', color: '#60A5FA', border: '#2563EB30' },
+  'live':      { bg: '#16A34A18', color: '#4ADE80', border: '#16A34A30' },
+  'completed': { bg: '#27272A',   color: '#71717A', border: '#3F3F46'   },
+  'cancelled': { bg: '#DC262618', color: '#F87171', border: '#DC262630' },
 };
 
-function EventCard({ event, token, onRsvp }) {
+const FORMAT_ICON = {
+  'online':    Video,
+  'in-person': MapPin,
+  'hybrid':    MapPin,
+};
+
+const MONO  = { fontFamily: "'Geist Mono', 'SF Mono', monospace" };
+const OUTFIT = { fontFamily: "'Outfit', 'Inter', sans-serif" };
+
+/* ─── Dummy data — 6 realistic events ──────────────────────────── */
+const DUMMY_EVENTS = [
+  {
+    _id: 'de-1',
+    title: 'National AI Build-a-thon 2026',
+    eventType: 'hackathon',
+    format: 'in-person',
+    status: 'upcoming',
+    date: '2026-07-12T09:00:00Z',
+    venue: 'BUET Auditorium, Dhaka',
+    organizerName: 'ICT Division BD',
+    hostingOrg: 'a2i',
+    capacityLimit: 300,
+    tags: ['AI', 'ML', 'BuildAI'],
+  },
+  {
+    _id: 'de-2',
+    title: 'Investor Pitch Night — Q3 2026',
+    eventType: 'pitch-competition',
+    format: 'hybrid',
+    status: 'upcoming',
+    date: '2026-07-20T18:00:00Z',
+    venue: 'GP House, Bashundhara',
+    organizerName: 'YY Ventures',
+    hostingOrg: 'YY Ventures',
+    capacityLimit: 120,
+    tags: ['Pitch', 'Seed', 'Fundraising'],
+  },
+  {
+    _id: 'de-3',
+    title: 'Embedded Systems & IoT Seminar',
+    eventType: 'workshop',
+    format: 'in-person',
+    status: 'upcoming',
+    date: '2026-07-28T10:00:00Z',
+    venue: 'NSU Engineering Block',
+    organizerName: 'NSU IEEE Chapter',
+    hostingOrg: 'NSU',
+    capacityLimit: 80,
+    tags: ['IoT', 'Hardware', 'Embedded'],
+  },
+  {
+    _id: 'de-4',
+    title: 'Founder Networking Breakfast',
+    eventType: 'networking',
+    format: 'in-person',
+    status: 'upcoming',
+    date: '2026-08-05T08:30:00Z',
+    venue: 'The Daily Star Centre',
+    organizerName: 'Startup Bangladesh',
+    hostingOrg: 'Startup Bangladesh',
+    capacityLimit: 60,
+    tags: ['Network', 'Founders', 'Community'],
+  },
+  {
+    _id: 'de-5',
+    title: 'Growth Marketing Masterclass',
+    eventType: 'webinar',
+    format: 'online',
+    status: 'upcoming',
+    date: '2026-08-10T14:00:00Z',
+    venue: null,
+    organizerName: 'bKash Marketing Team',
+    hostingOrg: 'CampusLaunch',
+    capacityLimit: 0,
+    tags: ['Marketing', 'Growth', 'SaaS'],
+  },
+  {
+    _id: 'de-6',
+    title: 'Climate Tech Demo Day',
+    eventType: 'pitch-competition',
+    format: 'hybrid',
+    status: 'live',
+    date: '2026-06-26T13:00:00Z',
+    venue: 'BRAC Centre Inn, Dhaka',
+    organizerName: 'GreenTech BD',
+    hostingOrg: 'BRAC',
+    capacityLimit: 200,
+    tags: ['ClimaTech', 'GreenStartup'],
+  },
+];
+
+/* ─── Shared filter button style ────────────────────────────────── */
+const filterBtn = (active) => ({
+  style: { ...MONO },
+  className: `px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest rounded-none border transition-none cursor-pointer ${
+    active
+      ? 'bg-[#2563EB] border-[#2563EB] text-white'
+      : 'bg-[#09090B] border-[#27272A] text-zinc-500 hover:border-zinc-500 hover:text-zinc-300'
+  }`,
+});
+
+/* ─── EventRow — the registry list item ─────────────────────────── */
+function EventRow({ event, token, onRsvp }) {
   const [registering, setRegistering] = useState(false);
 
   const handleRsvp = async () => {
@@ -45,88 +149,98 @@ function EventCard({ event, token, onRsvp }) {
     } finally { setRegistering(false); }
   };
 
+  const typeStyle   = TYPE_BADGE[event.eventType]   || TYPE_BADGE['other'];
+  const statusStyle = STATUS_BADGE[event.status]    || STATUS_BADGE['upcoming'];
+  const FormatIcon  = FORMAT_ICON[event.format]     || MapPin;
+
+  const dateObj = new Date(event.date);
+  const mon = dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const day = dateObj.toLocaleDateString('en-US', { day: '2-digit' });
+  const time = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
   return (
     <div
-      className="placard p-8 group flex flex-col justify-between bg-white border-2 border-stone-200 shadow-[4px_6px_0px_#d97706] hover:-translate-y-1 hover:shadow-[6px_8px_0px_#d97706] transition-all relative overflow-hidden"
-      style={{ borderRadius: '12px 32px 12px 32px' }}
+      className="group flex items-center gap-0 bg-[#18181B] border border-[#27272A] border-l-2"
+      style={{
+        borderLeftColor: 'transparent',
+        transition: 'border-left-color 0s, background-color 0s',
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.backgroundColor = '#202022';
+        e.currentTarget.style.borderLeftColor = '#2563EB';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.backgroundColor = '#18181B';
+        e.currentTarget.style.borderLeftColor = 'transparent';
+      }}
     >
-      <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/woven.png')] pointer-events-none" />
+      {/* COL 1 — Date ──────────────────────────────────────────── */}
+      <div className="w-20 shrink-0 flex flex-col items-center justify-center py-4 px-3 border-r border-[#27272A]">
+        <span className="text-[10px] font-bold uppercase text-zinc-500 leading-none" style={MONO}>{mon}</span>
+        <span className="text-xl font-black text-zinc-300 leading-tight" style={MONO}>{day}</span>
+        <span className="text-[9px] text-zinc-600 uppercase tracking-wide mt-0.5" style={MONO}>{time}</span>
+      </div>
 
-      <div>
-        {/* Type icon + status */}
-        <div className="flex justify-between items-start mb-6 relative z-10">
-          <div className="w-14 h-14 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-300 rounded-xl flex items-center justify-center shadow-sm transform -rotate-3 group-hover:rotate-0 transition">
-            <Rocket size={26} className="text-amber-900" />
-          </div>
-          <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${STATUS_COLORS[event.status] || ''}`}>
+      {/* COL 2 — Event info ─────────────────────────────────────── */}
+      <div className="flex-1 min-w-0 py-3.5 px-5">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="text-sm font-bold text-zinc-100 leading-snug truncate" style={OUTFIT}>
+            {event.title}
+          </h3>
+          {/* Status badge — inline */}
+          <span
+            className="shrink-0 text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 border"
+            style={{ ...MONO, backgroundColor: statusStyle.bg, color: statusStyle.color, borderColor: statusStyle.border }}
+          >
             {event.status}
           </span>
         </div>
-
-        <h3 className="text-2xl font-black text-amber-900 mb-1 font-serif-custom leading-tight line-clamp-2">
-          {event.title}
-        </h3>
-        <p className="text-stone-500 text-xs font-black uppercase tracking-widest mb-4">
-          {event.organizerName} · {event.hostingOrg || 'CampusLaunch'}
-        </p>
-
-        {/* Meta */}
-        <div className="space-y-2 mb-6">
-          <div className="flex items-center gap-3 text-stone-700 font-medium">
-            <div className="p-1.5 bg-stone-100 rounded-lg text-teal-700"><Calendar size={14} /></div>
-            <span className="text-sm font-bold text-amber-900">
-              {new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-            </span>
-          </div>
-          <div className="flex items-center gap-3 text-stone-700 font-medium">
-            <div className="p-1.5 bg-stone-100 rounded-lg text-amber-700">
-              {event.format === 'online' ? <Video size={14} /> : <MapPin size={14} />}
-            </div>
-            <span className="text-sm">{event.format === 'online' ? 'Online' : event.venue || event.format}</span>
-          </div>
+        <div className="flex items-center gap-3 text-[10px] text-zinc-500" style={MONO}>
+          <span className="flex items-center gap-1">
+            <FormatIcon size={10} className="text-zinc-600" />
+            {event.format === 'online' ? 'Online' : (event.venue || event.format)}
+          </span>
+          <span className="text-zinc-700">·</span>
+          <span>{event.organizerName}</span>
           {event.capacityLimit > 0 && (
-            <div className="flex items-center gap-3 text-stone-700 font-medium">
-              <div className="p-1.5 bg-stone-100 rounded-lg text-teal-700"><Users size={14} /></div>
-              <span className="text-sm">Capacity: <span className="font-bold text-amber-900">{event.capacityLimit}</span></span>
-            </div>
+            <>
+              <span className="text-zinc-700">·</span>
+              <span className="flex items-center gap-1">
+                <Users size={10} className="text-zinc-600" />
+                {event.capacityLimit} seats
+              </span>
+            </>
           )}
         </div>
-
-        {/* Type badge */}
-        <span
-          className={`inline-block px-3 py-1 border-2 text-[10px] font-black tracking-widest uppercase mb-4 capitalize ${TYPE_COLORS[event.eventType] || TYPE_COLORS['other']}`}
-          style={{ borderRadius: '4px 8px 4px 8px' }}
-        >
-          {event.eventType?.replace('-', ' ')}
-        </span>
-
-        {/* Tags */}
-        {event.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-4">
-            {event.tags.slice(0, 3).map(t => (
-              <span key={t} className="text-[9px] font-bold px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">#{t}</span>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-3 relative z-10">
+      {/* COL 3 — Type badge ─────────────────────────────────────── */}
+      <div className="shrink-0 px-5 py-3.5 border-l border-[#27272A] hidden md:flex items-center">
+        <span
+          className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border whitespace-nowrap"
+          style={{ ...MONO, backgroundColor: typeStyle.bg, color: typeStyle.color, borderColor: typeStyle.border }}
+        >
+          {event.eventType?.replace('-', ' ') || 'event'}
+        </span>
+      </div>
+
+      {/* COL 4 — Actions ────────────────────────────────────────── */}
+      <div className="shrink-0 flex items-center gap-0 border-l border-[#27272A]">
         <Link
           to={`/events/${event._id}`}
-          className="flex-1 text-center bg-amber-900 text-amber-50 font-black py-3 uppercase tracking-widest text-[10px] border-2 border-transparent hover:bg-amber-100 hover:text-amber-900 hover:border-amber-400 transition flex items-center justify-center gap-2"
-          style={{ borderRadius: '8px 24px 8px 24px' }}
+          className="flex items-center gap-1.5 px-4 py-5 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 hover:text-zinc-100 hover:bg-[#27272A] transition-colors border-r border-[#27272A]"
+          style={MONO}
         >
-          Details <ExternalLink size={11} />
+          Details <ChevronRight size={11} />
         </Link>
         {event.status !== 'completed' && (
           <button
             onClick={handleRsvp}
             disabled={registering}
-            className="flex-1 text-center bg-teal-100 text-teal-900 font-black py-3 uppercase tracking-widest text-[10px] border-2 border-teal-300 hover:bg-teal-200 transition disabled:opacity-50"
-            style={{ borderRadius: '24px 8px 24px 8px' }}
+            className="flex items-center gap-1.5 px-4 py-5 text-[10px] font-semibold uppercase tracking-widest text-[#2563EB] hover:bg-[#2563EB] hover:text-white transition-colors disabled:opacity-40"
+            style={MONO}
           >
-            {registering ? '...' : 'RSVP'}
+            {registering ? '···' : 'Register'}
           </button>
         )}
       </div>
@@ -134,6 +248,7 @@ function EventCard({ event, token, onRsvp }) {
   );
 }
 
+/* ─── EventHub — main page ──────────────────────────────────────── */
 export default function EventHub() {
   const { token, user } = useContext(AuthContext);
   const [events, setEvents]   = useState([]);
@@ -145,6 +260,7 @@ export default function EventHub() {
   const [status, setStatus]   = useState('All');
   const [page, setPage]       = useState(1);
 
+  /* ── All data-fetching logic UNCHANGED ───────────────────────── */
   useEffect(() => { fetchEvents(); }, [page, type, format, status]);
 
   useEffect(() => {
@@ -169,150 +285,173 @@ export default function EventHub() {
     } finally { setLoading(false); }
   };
 
+  /* ── Display data: live API or dummy fallback ────────────────── */
+  const displayEvents = events.length > 0 ? events : DUMMY_EVENTS;
+
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-paper">
+    <div className="min-h-screen bg-[#09090B]">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 py-10">
 
-      {/* Hero */}
-      <div className="mb-12">
-        <div
-          className="text-center md:text-left mb-10 overflow-hidden relative p-12 jewel-teal shadow-xl"
-          style={{ borderRadius: '16px 48px 16px 48px' }}
-        >
-          <div className="absolute inset-0 opacity-[0.05] bg-black pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="md:w-2/3">
-              <h1 className="text-5xl font-black mb-4 font-serif-custom text-teal-50 drop-shadow-md tracking-tight">
-                The Event Hub
-              </h1>
-              <p className="text-teal-100 text-lg font-sans-custom font-medium max-w-2xl leading-relaxed">
-                Discover pitch competitions, hackathons, workshops, and networking events across the Bangladesh startup ecosystem.
-              </p>
+        {/* ── Page Header ─────────────────────────────────────────── */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-0.5 h-4 bg-[#2563EB]" />
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500" style={MONO}>
+                Event Registry
+              </span>
             </div>
-            <div className="flex-shrink-0 bg-white/10 p-6 backdrop-blur-md border border-white/20 rounded-3xl">
-              <Rocket size={80} className="text-teal-100 opacity-60 transform rotate-12" />
-            </div>
+            <h1 className="text-4xl font-bold text-zinc-100" style={OUTFIT}>The Event Hub</h1>
+            <p className="text-zinc-400 text-sm mt-2 max-w-xl" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Pitch competitions, hackathons, workshops, and networking events across the Bangladesh startup ecosystem.
+            </p>
           </div>
-        </div>
 
-        {/* Stats + Create button */}
-        <div className="flex items-center justify-between mb-4 px-2">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span className="tracking-widest text-[10px] uppercase font-bold text-amber-900/40">
-              {total} Active Events
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Active count — static, no pulsing dot */}
+            <span className="text-[10px] font-semibold text-zinc-600 uppercase tracking-widest" style={MONO}>
+              {total > 0 ? total : displayEvents.length} events
             </span>
+            {(user?.role === 'Organizer' || user?.role === 'Mentor') && (
+              <Link
+                to="/events/create"
+                className="flex items-center gap-2 bg-[#2563EB] text-white text-[10px] font-semibold uppercase tracking-widest px-4 py-2 hover:bg-blue-500 transition-colors"
+                style={MONO}
+              >
+                <Plus size={12} /> Create Event
+              </Link>
+            )}
           </div>
-          {(user?.role === 'Organizer' || user?.role === 'Mentor') && (
-            <Link
-              to="/events/create"
-              className="flex items-center gap-2 bg-amber-900 text-amber-50 text-[10px] font-black uppercase tracking-widest px-4 py-2 border-2 border-amber-900 hover:bg-amber-100 hover:text-amber-900 hover:border-amber-400 transition shadow-[2px_3px_0px_#78350f]"
-              style={{ borderRadius: '8px 20px 8px 20px' }}
-            >
-              <Plus size={12} /> Create Event
-            </Link>
-          )}
         </div>
 
-        {/* Filter hub */}
-        <div className="placard p-8 border-t-4 border-amber-400 bg-stone-50/50 flex flex-col gap-6 shadow-xl mb-12">
+        {/* ── Filter Bar ──────────────────────────────────────────── */}
+        <div className="bg-[#18181B] border border-[#27272A] p-4 mb-6 flex flex-col gap-4">
+
           {/* Search */}
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"><Search size={20} /></span>
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
             <input
               type="text"
               placeholder="Search events by title, tags, or organizer…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-white border-2 border-stone-200 focus:border-amber-400 focus:ring-0 text-stone-800 font-bold tracking-tight rounded-2xl shadow-inner transition-all hover:border-stone-300"
+              className="w-full pl-9 pr-4 py-2 bg-[#09090B] border border-[#27272A] text-zinc-100 text-sm placeholder-zinc-600 focus:outline-none focus:border-[#2563EB] transition-colors"
+              style={MONO}
             />
           </div>
 
-          {/* Type filter */}
+          {/* Type pills */}
           <div>
-            <div className="flex items-center gap-2 mb-3 text-stone-500 font-black uppercase tracking-widest text-[10px]">
-              <Filter size={13} /> Event Type:
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {TYPE_OPTIONS.map(t => (
-                <button
-                  key={t}
-                  onClick={() => { setType(t); setPage(1); }}
-                  className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest capitalize transition-all border-2
-                    ${type === t
-                      ? 'bg-amber-900 border-amber-900 text-amber-50 shadow-md -translate-y-0.5'
-                      : 'bg-white border-stone-200 text-stone-500 hover:border-amber-400 hover:text-amber-900'}`}
-                  style={{ borderRadius: '8px 20px 8px 20px' }}
-                >
-                  {t.replace('-', ' ')}
-                </button>
-              ))}
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600 block mb-2" style={MONO}>
+              <Filter size={10} className="inline mr-1.5 text-zinc-700" />Type
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {TYPE_OPTIONS.map(t => {
+                const b = filterBtn(type === t);
+                return (
+                  <button key={t} onClick={() => { setType(t); setPage(1); }} className={b.className} style={b.style}>
+                    {t.replace('-', ' ')}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Format + Status */}
-          <div className="flex flex-wrap gap-6">
+          <div className="flex flex-wrap gap-8">
             <div>
-              <p className="text-[10px] font-black text-stone-500 uppercase tracking-widest mb-2">Format:</p>
-              <div className="flex gap-2">
-                {FORMAT_OPTIONS.map(f => (
-                  <button key={f}
-                    onClick={() => { setFormat(f); setPage(1); }}
-                    className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest capitalize border-2 transition-all
-                      ${format === f ? 'bg-teal-800 border-teal-800 text-teal-50' : 'bg-white border-stone-200 text-stone-500 hover:border-teal-400'}`}
-                    style={{ borderRadius: '6px 16px 6px 16px' }}
-                  >{f}</button>
-                ))}
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600 block mb-2" style={MONO}>Format</span>
+              <div className="flex gap-1.5">
+                {FORMAT_OPTIONS.map(f => {
+                  const b = filterBtn(format === f);
+                  return (
+                    <button key={f} onClick={() => { setFormat(f); setPage(1); }} className={b.className} style={b.style}>
+                      {f}
+                    </button>
+                  );
+                })}
               </div>
             </div>
             <div>
-              <p className="text-[10px] font-black text-stone-500 uppercase tracking-widest mb-2">Status:</p>
-              <div className="flex gap-2">
-                {STATUS_OPTIONS.map(s => (
-                  <button key={s}
-                    onClick={() => { setStatus(s); setPage(1); }}
-                    className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest capitalize border-2 transition-all
-                      ${status === s ? 'bg-teal-800 border-teal-800 text-teal-50' : 'bg-white border-stone-200 text-stone-500 hover:border-teal-400'}`}
-                    style={{ borderRadius: '6px 16px 6px 16px' }}
-                  >{s}</button>
-                ))}
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600 block mb-2" style={MONO}>Status</span>
+              <div className="flex gap-1.5">
+                {STATUS_OPTIONS.map(s => {
+                  const b = filterBtn(status === s);
+                  return (
+                    <button key={s} onClick={() => { setStatus(s); setPage(1); }} className={b.className} style={b.style}>
+                      {s}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Grid */}
+        {/* ── Registry Column Headers ──────────────────────────────── */}
+        <div className="hidden md:flex items-center bg-[#09090B] border border-[#27272A] border-b-0 px-0">
+          <div className="w-20 shrink-0 px-3 py-2 border-r border-[#27272A]">
+            <span className="text-[9px] font-semibold uppercase tracking-widest text-zinc-700" style={MONO}>Date</span>
+          </div>
+          <div className="flex-1 px-5 py-2">
+            <span className="text-[9px] font-semibold uppercase tracking-widest text-zinc-700" style={MONO}>Event</span>
+          </div>
+          <div className="shrink-0 px-5 py-2 border-l border-[#27272A] w-40">
+            <span className="text-[9px] font-semibold uppercase tracking-widest text-zinc-700" style={MONO}>Type</span>
+          </div>
+          <div className="shrink-0 px-4 py-2 border-l border-[#27272A] w-36">
+            <span className="text-[9px] font-semibold uppercase tracking-widest text-zinc-700" style={MONO}>Action</span>
+          </div>
+        </div>
+
+        {/* ── Registry List ────────────────────────────────────────── */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
-            {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="h-72 bg-stone-100 rounded-3xl border-2 border-dashed border-stone-200" />
+          <div className="flex flex-col gap-px bg-[#27272A]">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="h-16 bg-[#18181B] animate-pulse" />
             ))}
           </div>
-        ) : events.length === 0 ? (
-          <div className="text-center py-20 placard bg-stone-50 border-dashed border-2 border-stone-200"
-               style={{ borderRadius: '16px 48px 16px 48px' }}>
-            <p className="text-stone-400 font-black uppercase tracking-widest text-sm">No events match your search.</p>
+        ) : displayEvents.length === 0 ? (
+          <div className="bg-[#18181B] border border-dashed border-[#27272A] py-16 text-center">
+            <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-semibold" style={MONO}>
+              No events match your filters.
+            </p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {events.map(ev => (
-                <EventCard key={ev._id} event={ev} token={token} onRsvp={fetchEvents} />
+            <div className="flex flex-col gap-px bg-[#27272A]">
+              {displayEvents.map(ev => (
+                <EventRow key={ev._id} event={ev} token={token} onRsvp={fetchEvents} />
               ))}
             </div>
+
+            {/* ── Pagination ─────────────────────────────────────── */}
             {total > 9 && (
-              <div className="flex justify-center gap-3 mt-12">
-                <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-                  className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest border-2 border-stone-200 bg-white text-stone-500 hover:border-amber-400 hover:text-amber-900 transition disabled:opacity-30"
-                  style={{ borderRadius: '8px 20px 8px 20px' }}>← Prev</button>
-                <span className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest bg-amber-900 text-amber-50 border-2 border-amber-900"
-                  style={{ borderRadius: '20px 8px 20px 8px' }}>Page {page}</span>
-                <button disabled={events.length < 9} onClick={() => setPage(p => p + 1)}
-                  className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest border-2 border-stone-200 bg-white text-stone-500 hover:border-amber-400 hover:text-amber-900 transition disabled:opacity-30"
-                  style={{ borderRadius: '20px 8px 20px 8px' }}>Next →</button>
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#27272A]">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage(p => p - 1)}
+                  className="text-[10px] font-semibold uppercase tracking-widest px-4 py-2 border border-[#27272A] text-zinc-500 hover:border-zinc-500 hover:text-zinc-100 disabled:opacity-30 transition-colors"
+                  style={MONO}
+                >
+                  ← Prev
+                </button>
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600" style={MONO}>
+                  Page {page} of {Math.ceil(total / 9)}
+                </span>
+                <button
+                  disabled={events.length < 9}
+                  onClick={() => setPage(p => p + 1)}
+                  className="text-[10px] font-semibold uppercase tracking-widest px-4 py-2 border border-[#27272A] text-zinc-500 hover:border-zinc-500 hover:text-zinc-100 disabled:opacity-30 transition-colors"
+                  style={MONO}
+                >
+                  Next →
+                </button>
               </div>
             )}
           </>
         )}
+
       </div>
     </div>
   );

@@ -1,9 +1,19 @@
 import { memo } from 'react';
-import { SECTION_KEYS, SECTION_GRID } from './canvasConstants';
+import { SECTION_KEYS } from './canvasConstants';
 import CanvasSection from './CanvasSection';
 
-// Strategyzer-proportioned 5×3 grid holding all 9 BMC sections.
-// On mobile, collapses to a single-column stack.
+const GRID_CLASSES = {
+  keyPartnerships:       'col-span-1 lg:col-start-1 lg:col-span-2 lg:row-start-1 lg:row-span-2',
+  keyActivities:         'col-span-1 lg:col-start-3 lg:col-span-2 lg:row-start-1 lg:row-span-1',
+  keyResources:          'col-span-1 lg:col-start-3 lg:col-span-2 lg:row-start-2 lg:row-span-1',
+  valuePropositions:     'col-span-1 lg:col-start-5 lg:col-span-2 lg:row-start-1 lg:row-span-2',
+  customerRelationships: 'col-span-1 lg:col-start-7 lg:col-span-2 lg:row-start-1 lg:row-span-1',
+  channels:              'col-span-1 lg:col-start-7 lg:col-span-2 lg:row-start-2 lg:row-span-1',
+  customerSegments:      'col-span-1 lg:col-start-9 lg:col-span-2 lg:row-start-1 lg:row-span-2',
+  costStructure:         'col-span-1 lg:col-start-1 lg:col-span-5 lg:row-start-3 lg:row-span-1',
+  revenueStreams:        'col-span-1 lg:col-start-6 lg:col-span-5 lg:row-start-3 lg:row-span-1'
+};
+
 function CanvasGrid({
   sections = {},
   sectionFocus = {},
@@ -22,20 +32,20 @@ function CanvasGrid({
 }) {
   return (
     <div
-      className="w-full min-h-[520px] md:min-h-[640px] lg:h-[calc(100vh-180px)] bg-white rounded-xl border-2 border-stone-300 shadow-inner p-2 md:p-3"
+      className="w-full min-h-[520px] md:min-h-[640px] lg:h-[calc(100vh-180px)] bg-[#09090B] border border-[#27272A] rounded-sm p-2 md:p-3"
       role="group"
       aria-label="Business Model Canvas Grid"
     >
       <div
         className="
           grid gap-2
-          grid-cols-1 grid-rows-9
-          md:grid-cols-5 md:grid-rows-3
+          grid-cols-1
+          lg:grid-cols-10 lg:grid-rows-3
           h-full
         "
       >
         {SECTION_KEYS.map((key) => (
-          <div key={key} className={`${SECTION_GRID[key]} min-h-[160px]`}>
+          <div key={key} className={`${GRID_CLASSES[key]} min-h-[160px]`}>
             <CanvasSection
               sectionKey={key}
               section={sections[key]}
