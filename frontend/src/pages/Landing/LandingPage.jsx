@@ -88,30 +88,32 @@ const LandingPage = () => {
           TOP BAR  (replaces Navbar on this page)
       ══════════════════════════════════════════════════════ */}
       <header className="relative z-20 w-full border-b border-[#27272A] bg-[#09090B]/80 backdrop-blur-sm">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 h-14 flex items-center justify-between">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 h-14 flex flex-row items-center justify-between w-full gap-3 md:gap-6">
           {/* Logo */}
           <Link
             to="/"
-            className="text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="text-zinc-500 hover:text-zinc-300 transition-colors whitespace-nowrap"
             style={{ ...MONO, fontSize: '10px', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase' }}
           >
             CampusLaunch
-            <span className="mx-1.5 text-zinc-700">·</span>
-            2026
+            <span className="hidden md:inline">
+              <span className="mx-1.5 text-zinc-700">·</span>
+              2026
+            </span>
           </Link>
 
           {/* Auth actions */}
-          <nav className="flex items-center gap-3">
+          <nav className="flex items-center gap-3 md:gap-6">
             <Link
               to="/login"
-              className="text-zinc-400 hover:text-zinc-100 transition-colors text-[11px] font-semibold uppercase tracking-widest"
+              className="text-zinc-400 hover:text-zinc-100 transition-colors text-[10px] md:text-[11px] font-semibold uppercase tracking-widest whitespace-nowrap"
               style={MONO}
             >
               Sign In
             </Link>
             <Link
               to="/register"
-              className="flex items-center gap-1.5 bg-[#2563EB] text-white font-semibold px-4 py-2 rounded-sm text-[11px] uppercase tracking-widest hover:bg-blue-500 transition-colors"
+              className="flex items-center gap-1.5 bg-[#2563EB] text-white font-semibold px-3 py-1.5 md:px-5 md:py-2 rounded-sm text-[10px] md:text-[11px] uppercase tracking-widest hover:bg-blue-500 transition-colors whitespace-nowrap"
               style={MONO}
             >
               Get Started <ArrowRight size={12} />
