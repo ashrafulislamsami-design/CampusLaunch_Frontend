@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { getEmailLog } from '../../services/emailService';
 
+const MONO = { fontFamily: "'Geist Mono', 'SF Mono', monospace" };
+const OUTFIT = { fontFamily: "'Outfit', 'Inter', sans-serif" };
+
 const STATUS_STYLES = {
-  sent: 'bg-green-100 text-green-800',
-  failed: 'bg-red-100 text-red-800',
-  skipped: 'bg-stone-100 text-stone-600',
+  sent: 'bg-green-950/30 text-green-400 border-green-900/30',
+  failed: 'bg-red-950/30 text-red-400 border-red-900/30',
+  skipped: 'bg-zinc-950 border-zinc-800 text-zinc-500',
 };
 
 const TYPE_LABELS = {
@@ -45,61 +48,70 @@ const EmailLogSection = () => {
 
   return (
     <div className="mt-12">
-      <h2 className="text-xl font-bold text-stone-900 mb-1">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-0.5 h-4 bg-[#2563EB]" />
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500" style={MONO}>
+          Delivery Audit
+        </span>
+      </div>
+      <h2 className="text-xl font-bold text-zinc-100 tracking-tight" style={OUTFIT}>
         Recent Emails Sent to You
       </h2>
-      <p className="text-sm text-stone-500 mb-4">
+      <p className="text-xs text-zinc-500 mt-1 mb-5 leading-relaxed" style={MONO}>
         The last 20 emails our system delivered to your inbox.
       </p>
 
-      <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-[#18181B] border border-[#27272A] rounded-sm overflow-hidden shadow-md">
         {loading && (
-          <div className="p-8 text-center text-stone-400 text-sm">Loading…</div>
+          <div className="p-8 text-center text-zinc-500 text-xs font-mono" style={MONO}>Loading audit logs…</div>
         )}
         {err && (
-          <div className="p-8 text-center text-red-600 text-sm">{err}</div>
+          <div className="p-8 text-center text-red-400 text-xs font-mono border border-red-900/30 bg-red-950/20" style={MONO}>{err}</div>
         )}
         {!loading && !err && logs.length === 0 && (
-          <div className="p-8 text-center text-stone-400 text-sm">
+          <div className="p-8 text-center text-zinc-500 text-xs font-mono" style={MONO}>
             No emails yet. Your email history will appear here.
           </div>
         )}
         {!loading && !err && logs.length > 0 && (
-          <table className="w-full text-sm">
-            <thead className="bg-stone-50 text-stone-600 text-xs uppercase tracking-wider">
-              <tr>
-                <th className="text-left px-4 py-3">Type</th>
-                <th className="text-left px-4 py-3">Subject</th>
-                <th className="text-left px-4 py-3">Sent</th>
-                <th className="text-left px-4 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map((log) => (
-                <tr key={log._id} className="border-t border-stone-100">
-                  <td className="px-4 py-3 font-medium text-stone-800">
-                    {TYPE_LABELS[log.emailType] || log.emailType}
-                  </td>
-                  <td className="px-4 py-3 text-stone-600 max-w-xs truncate">
-                    {log.subject}
-                  </td>
-                  <td className="px-4 py-3 text-stone-500">
-                    {new Date(log.sentAt).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`
-                        inline-flex px-2 py-0.5 rounded-full text-xs font-semibold
-                        ${STATUS_STYLES[log.status] || 'bg-stone-100 text-stone-600'}
-                      `}
-                    >
-                      {log.status}
-                    </span>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left border-collapse">
+              <thead>
+                <tr className="bg-[#09090B] border-b border-[#27272A] text-zinc-500 font-semibold uppercase tracking-wider text-[10px]" style={MONO}>
+                  <th className="px-4 py-3.5">Type</th>
+                  <th className="px-4 py-3.5">Subject</th>
+                  <th className="px-4 py-3.5">Sent</th>
+                  <th className="px-4 py-3.5">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[#27272A]/50">
+                {logs.map((log) => (
+                  <tr key={log._id} className="hover:bg-zinc-800/10 transition-colors">
+                    <td className="px-4 py-3 font-semibold text-zinc-200 font-mono" style={MONO}>
+                      {TYPE_LABELS[log.emailType] || log.emailType}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-400 max-w-xs truncate">
+                      {log.subject}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-500 font-mono" style={MONO}>
+                      {new Date(log.sentAt).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`
+                          inline-flex items-center px-2 py-0.5 rounded-sm text-[9px] font-semibold uppercase tracking-wider border
+                          ${STATUS_STYLES[log.status] || 'bg-zinc-950 border-zinc-800 text-zinc-500'}
+                        `}
+                        style={MONO}
+                      >
+                        {log.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
