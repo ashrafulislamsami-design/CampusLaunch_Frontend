@@ -4,6 +4,18 @@ import { API_BASE_URL } from '@/config';
 import { auth } from '../firebaseConfig';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 
+const isCustomJwt = (token) => {
+  if (!token) return false;
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+  try {
+    const payload = JSON.parse(window.atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return !!(payload.user && payload.user.id);
+  } catch (err) {
+    return false;
+  }
+};
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -77,7 +89,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         // No Firebase user, but check if there's a local mock/test token (fallback for dev testing)
         const localToken = localStorage.getItem('token');
-        if (localToken && (localToken.startsWith('mock_test_token_') || localToken.length < 200)) {
+        if (localToken && (localToken.startsWith('mock_test_token_') || isCustomJwt(localToken))) {
           setToken(localToken);
           setIsAuthenticated(true);
 
